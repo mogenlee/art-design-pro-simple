@@ -116,7 +116,7 @@
         containLabel: true
       }
 
-      const options: EChartsOption = {
+      return {
         backgroundColor: 'transparent',
         animation: true,
         animationDuration: 1000,
@@ -184,8 +184,6 @@
           })
         ]
       }
-
-      return options
     }
   })
 </script>

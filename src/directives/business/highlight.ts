@@ -52,12 +52,12 @@ function highlightCode(block: HTMLElement) {
 // 插入行号
 function insertLineNumbers(block: HTMLElement) {
   const lines = block.innerHTML.split('\n')
-  const numberedLines = lines
+
+  block.innerHTML = lines
     .map((line, index) => {
       return `<span class="line-number">${index + 1}</span> ${line}`
     })
     .join('\n')
-  block.innerHTML = numberedLines
 }
 
 // 添加复制按钮：调整 DOM 结构，将代码部分包裹在 .code-wrapper 内

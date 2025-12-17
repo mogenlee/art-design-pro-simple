@@ -1,7 +1,6 @@
 <!-- 用户菜单 -->
 <script setup lang="ts">
   import { ElMessageBox } from 'element-plus'
-  import { useI18n } from 'vue-i18n'
   import { useRouter } from 'vue-router'
   import { useUserStore } from '@/store/modules/user'
   import { WEB_LINKS } from '@/utils/constants'
@@ -119,11 +118,11 @@
           </li>
           <li class="btn-item" @click="lockScreen()">
             <ArtSvgIcon icon="ri:lock-line" />
-            <span>{{ $t('topBar.user.lockScreen') }}</span>
+            <span>{{ t('topBar.user.lockScreen') }}</span>
           </li>
           <div class="w-full h-px my-2 bg-g-300/80" />
           <div class="log-out c-p" @click="loginOut">
-            {{ $t('topBar.user.logout') }}
+            {{ t('topBar.user.logout') }}
           </div>
         </ul>
       </div>

@@ -2,7 +2,6 @@
 <script setup lang="ts">
   import { useClipboard } from '@vueuse/core'
   import { nextTick } from 'vue'
-  import { useI18n } from 'vue-i18n'
   import { SETTING_DEFAULT_CONFIG } from '@/config/setting'
   import { MenuThemeEnum } from '@/enums/appEnum'
   import { useTheme } from '@/hooks/core/useTheme'

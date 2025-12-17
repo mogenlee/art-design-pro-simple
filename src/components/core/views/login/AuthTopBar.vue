@@ -1,7 +1,6 @@
 <!-- 授权页右上角组件 -->
 <script setup lang="ts">
   import type { LanguageEnum } from '@/enums/appEnum'
-  import { useI18n } from 'vue-i18n'
   import AppConfig from '@/config'
   import { useHeaderBar } from '@/hooks/core/useHeaderBar'
   import { languageOptions } from '@/locales'

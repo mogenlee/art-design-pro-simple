@@ -2,7 +2,6 @@
 <script setup lang="ts">
   import type { AppRouteRecord } from '@/types/router'
   import { ElMessageBox, ElTag } from 'element-plus'
-  import { useI18n } from 'vue-i18n'
   import { fetchGetMenuList } from '@/api/system-manage'
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTableColumns } from '@/hooks/core/useTableColumns'
@@ -60,8 +59,7 @@
     loading.value = true
 
     try {
-      const list = await fetchGetMenuList()
-      tableData.value = list
+      tableData.value = await fetchGetMenuList()
     } catch (error) {
       throw error instanceof Error ? error : new Error('获取菜单失败')
     } finally {

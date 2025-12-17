@@ -5,7 +5,6 @@
   import { storeToRefs } from 'pinia'
   import { computed, onMounted, onUnmounted, ref } from 'vue'
   import { VueDraggable } from 'vue-draggable-plus'
-  import { useI18n } from 'vue-i18n'
   import { TableSizeEnum } from '@/enums/formEnum'
   import { useTableStore } from '@/store/modules/table'
 
@@ -104,10 +103,7 @@
     // 拖拽进入的目标 DOM 元素
     const toElement = event.related as HTMLElement
     // 如果目标位置是 fixed 列，则不允许移动
-    if (toElement && toElement.classList.contains('fixed-column')) {
-      return false
-    }
-    return true
+    return !(toElement && toElement.classList.contains('fixed-column'))
   }
 
   /** 搜索事件处理 */

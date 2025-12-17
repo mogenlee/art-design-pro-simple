@@ -3,6 +3,7 @@
   function open() {
     toggle()
   }
+
   defineExpose({ open })
 </script>
 

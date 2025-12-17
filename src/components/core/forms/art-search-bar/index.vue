@@ -24,7 +24,6 @@
     ElTimeSelect,
     ElTreeSelect
   } from 'element-plus'
-  import { useI18n } from 'vue-i18n'
   import { calculateResponsiveSpan } from '@/utils/form/responsive'
 
   defineOptions({ name: 'ArtSearchBar' })

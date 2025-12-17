@@ -70,7 +70,7 @@ export default ({ mode }: { mode: string }) => {
       tailwindcss(),
       // 自动按需导入 API
       AutoImport({
-        imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'],
+        imports: ['vue', 'vue-router', 'pinia', '@vueuse/core', 'vue-i18n'],
         dts: 'src/types/import/auto-imports.d.ts',
         resolvers: [ElementPlusResolver()],
         eslintrc: {

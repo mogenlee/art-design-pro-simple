@@ -1,5 +1,4 @@
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
 import AppConfig from '@/config'
 import { headerBarConfig } from '@/config/modules/headerBar'
 import { ContainerWidthEnum } from '@/enums/appEnum'

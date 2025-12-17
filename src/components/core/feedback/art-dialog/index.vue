@@ -3,7 +3,6 @@
    * ArtDialog 通用对话框组件
    * 基于 el-dialog 封装，支持 i18n 国际化
    */
-  import { useI18n } from 'vue-i18n'
 
   defineOptions({ name: 'ArtDialog' })
 

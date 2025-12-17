@@ -3,7 +3,6 @@
   import type { FormInstance, FormRules } from 'element-plus'
   import { Lock, Unlock } from '@element-plus/icons-vue'
   import CryptoJS from 'crypto-js'
-  import { useI18n } from 'vue-i18n'
   import { useUserStore } from '@/store/modules/user'
   import { mittBus } from '@/utils/sys'
 
@@ -395,7 +394,7 @@
               </ElInput>
             </ElFormItem>
             <ElButton v-ripple type="primary" class="w-full mt-0.5" @click="handleLock">
-              {{ $t('lockScreen.lock.btnText') }}
+              {{ t('lockScreen.lock.btnText') }}
             </ElButton>
           </ElForm>
         </div>
@@ -443,7 +442,7 @@
               class="mt-2.5 !text-g-600 hover:!text-theme hover:!bg-transparent"
               @click="toLogin"
             >
-              {{ $t('lockScreen.unlock.backBtnText') }}
+              {{ t('lockScreen.unlock.backBtnText') }}
             </ElButton>
           </div>
         </ElForm>

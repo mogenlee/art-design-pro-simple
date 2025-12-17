@@ -2,7 +2,6 @@
 <script setup lang="ts">
   import type { LanguageEnum } from '@/enums/appEnum'
   import { useFullscreen, useWindowSize } from '@vueuse/core'
-  import { useI18n } from 'vue-i18n'
   import { useRouter } from 'vue-router'
   import AppConfig from '@/config'
   import { MenuTypeEnum } from '@/enums/appEnum'

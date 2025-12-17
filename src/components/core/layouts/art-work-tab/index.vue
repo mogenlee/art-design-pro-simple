@@ -6,7 +6,6 @@
   import { storeToRefs } from 'pinia'
 
   import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-  import { useI18n } from 'vue-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import { useCommon } from '@/hooks/core/useCommon'
   import { useSettingStore } from '@/store/modules/setting'

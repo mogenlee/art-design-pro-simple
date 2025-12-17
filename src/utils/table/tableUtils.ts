@@ -134,8 +134,8 @@ export function defaultResponseAdapter<T>(response: unknown): ApiResponse<T> {
   }
 
   const res = response as Record<string, unknown>
-  let records: T[] = []
-  let total = 0
+  let records: T[]
+  let total
   let pagination: Pick<ApiResponse<unknown>, 'current' | 'size'> | undefined
 
   // 处理标准格式或直接列表

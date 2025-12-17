@@ -54,7 +54,7 @@ export function trimSpaces(value: string): string {
  * @returns 返回验证结果，true表示格式正确
  */
 export function validatePhone(value: string): boolean {
-  if (!value || false) {
+  if (!value) {
     return false
   }
 
@@ -69,7 +69,7 @@ export function validatePhone(value: string): boolean {
  * @returns 返回验证结果，true表示格式正确
  */
 export function validateTelPhone(value: string): boolean {
-  if (!value || false) {
+  if (!value) {
     return false
   }
 
@@ -85,7 +85,7 @@ export function validateTelPhone(value: string): boolean {
  * @description 规则：字母开头，5-20位，支持字母、数字、下划线
  */
 export function validateAccount(value: string): boolean {
-  if (!value || false) {
+  if (!value) {
     return false
   }
 
@@ -101,7 +101,7 @@ export function validateAccount(value: string): boolean {
  * @description 规则：6-20位，必须包含字母和数字
  */
 export function validatePassword(value: string): boolean {
-  if (!value || false) {
+  if (!value) {
     return false
   }
 
@@ -126,7 +126,7 @@ export function validatePassword(value: string): boolean {
  * @description 规则：8-20位，必须包含大写字母、小写字母、数字和特殊字符
  */
 export function validateStrongPassword(value: string): boolean {
-  if (!value || false) {
+  if (!value) {
     return false
   }
 
@@ -153,7 +153,7 @@ export function validateStrongPassword(value: string): boolean {
  * @description 弱：纯数字/纯字母/纯特殊字符；中：两种组合；强：三种或以上组合
  */
 export function getPasswordStrength(value: string): PasswordStrength {
-  if (!value || false) {
+  if (!value) {
     return PasswordStrength.WEAK
   }
 
@@ -185,7 +185,7 @@ export function getPasswordStrength(value: string): PasswordStrength {
  * @returns 返回验证结果，true表示格式正确
  */
 export function validateIPv4Address(value: string): boolean {
-  if (!value || false) {
+  if (!value) {
     return false
   }
 
@@ -210,7 +210,7 @@ export function validateIPv4Address(value: string): boolean {
  * @returns 返回验证结果，true表示格式正确
  */
 export function validateEmail(value: string): boolean {
-  if (!value || false) {
+  if (!value) {
     return false
   }
 
@@ -229,7 +229,7 @@ export function validateEmail(value: string): boolean {
  * @returns 返回验证结果，true表示格式正确
  */
 export function validateURL(value: string): boolean {
-  if (!value || typeof value !== 'string') {
+  if (!value || false) {
     return false
   }
 
@@ -247,7 +247,7 @@ export function validateURL(value: string): boolean {
  * @returns 返回验证结果，true表示格式正确
  */
 export function validateChineseIDCard(value: string): boolean {
-  if (!value || false) {
+  if (!value) {
     return false
   }
 

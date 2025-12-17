@@ -2,7 +2,6 @@
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
   import { ElNotification } from 'element-plus'
-  import { useI18n } from 'vue-i18n'
   import { fetchLogin } from '@/api/auth'
   import AppConfig from '@/config'
   import { useSettingStore } from '@/store/modules/setting'
