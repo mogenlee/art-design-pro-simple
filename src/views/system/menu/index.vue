@@ -47,6 +47,7 @@
       />
     </ElCard>
   </div>
+  <EditDialog ref="editRef"></EditDialog>
 </template>
 
 <script setup lang="ts">
@@ -57,9 +58,12 @@
   import MenuDialog from './modules/menu-dialog.vue'
   import { fetchGetMenuList } from '@/api/system-manage'
   import { ElTag, ElMessageBox } from 'element-plus'
-
+  import { useI18n } from 'vue-i18n'
+  import EditDialog from './edit.vue'
   defineOptions({ name: 'Menus' })
-
+  const { t } = useI18n()
+  const editRef = shallowRef()
+  console.log(t('common.add'))
   // 状态管理
   const loading = ref(false)
   const isExpanded = ref(false)
@@ -355,10 +359,12 @@
    * 添加菜单
    */
   const handleAddMenu = (): void => {
-    dialogType.value = 'menu'
-    editData.value = null
-    lockMenuType.value = true
-    dialogVisible.value = true
+    // dialogType.value = 'menu'
+    // editData.value = null
+    // lockMenuType.value = true
+    // dialogVisible.value = true
+
+    editRef.value?.open()
   }
 
   /**
