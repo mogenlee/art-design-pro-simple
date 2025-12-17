@@ -35,23 +35,23 @@
  * @module router/guards/beforeEach
  * @author Art Design Pro Team
  */
-import type { Router, RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
-import { nextTick } from 'vue'
+import type { NavigationGuardNext, RouteLocationNormalized, Router } from 'vue-router'
 import NProgress from 'nprogress'
+import { nextTick } from 'vue'
+import { fetchGetUserInfo } from '@/api/auth'
+import { useCommon } from '@/hooks/core/useCommon'
+import { useMenuStore } from '@/store/modules/menu'
 import { useSettingStore } from '@/store/modules/setting'
 import { useUserStore } from '@/store/modules/user'
-import { useMenuStore } from '@/store/modules/menu'
+import { useWorktabStore } from '@/store/modules/worktab'
+import { isHttpError } from '@/utils/http/error'
+import { ApiStatus } from '@/utils/http/status'
 import { setWorktab } from '@/utils/navigation'
 import { setPageTitle } from '@/utils/router'
-import { RoutesAlias } from '../routesAlias'
-import { staticRoutes } from '../routes/staticRoutes'
 import { loadingService } from '@/utils/ui'
-import { useCommon } from '@/hooks/core/useCommon'
-import { useWorktabStore } from '@/store/modules/worktab'
-import { fetchGetUserInfo } from '@/api/auth'
-import { ApiStatus } from '@/utils/http/status'
-import { isHttpError } from '@/utils/http/error'
-import { RouteRegistry, MenuProcessor, IframeRouteManager, RoutePermissionValidator } from '../core'
+import { IframeRouteManager, MenuProcessor, RoutePermissionValidator, RouteRegistry } from '../core'
+import { staticRoutes } from '../routes/staticRoutes'
+import { RoutesAlias } from '../routesAlias'
 
 // 路由注册器实例
 let routeRegistry: RouteRegistry | null = null

@@ -1,15 +1,3 @@
-<template>
-  <ArtSearchBar
-    ref="searchBarRef"
-    v-model="formData"
-    :items="formItems"
-    :rules="rules"
-    @reset="handleReset"
-    @search="handleSearch"
-  >
-  </ArtSearchBar>
-</template>
-
 <script setup lang="ts">
   interface Props {
     modelValue: Record<string, any>
@@ -110,3 +98,14 @@
     console.log('表单数据', formData.value)
   }
 </script>
+
+<template>
+  <ArtSearchBar
+    ref="searchBarRef"
+    v-model="formData"
+    :items="formItems"
+    :rules="rules"
+    @reset="handleReset"
+    @search="handleSearch"
+  />
+</template>

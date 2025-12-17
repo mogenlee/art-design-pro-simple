@@ -1,30 +1,30 @@
 // scripts/clean-dev.ts
-import fs from 'fs/promises'
-import path from 'path'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 // 现代化颜色主题
 const theme = {
   // 基础颜色
-  reset: '\x1b[0m',
-  bold: '\x1b[1m',
-  dim: '\x1b[2m',
+  reset: '\x1B[0m',
+  bold: '\x1B[1m',
+  dim: '\x1B[2m',
 
   // 前景色
-  primary: '\x1b[38;5;75m', // 亮蓝色
-  success: '\x1b[38;5;82m', // 亮绿色
-  warning: '\x1b[38;5;220m', // 亮黄色
-  error: '\x1b[38;5;196m', // 亮红色
-  info: '\x1b[38;5;159m', // 青色
-  purple: '\x1b[38;5;141m', // 紫色
-  orange: '\x1b[38;5;208m', // 橙色
-  gray: '\x1b[38;5;245m', // 灰色
-  white: '\x1b[38;5;255m', // 白色
+  primary: '\x1B[38;5;75m', // 亮蓝色
+  success: '\x1B[38;5;82m', // 亮绿色
+  warning: '\x1B[38;5;220m', // 亮黄色
+  error: '\x1B[38;5;196m', // 亮红色
+  info: '\x1B[38;5;159m', // 青色
+  purple: '\x1B[38;5;141m', // 紫色
+  orange: '\x1B[38;5;208m', // 橙色
+  gray: '\x1B[38;5;245m', // 灰色
+  white: '\x1B[38;5;255m', // 白色
 
   // 背景色
-  bgDark: '\x1b[48;5;235m', // 深灰背景
-  bgBlue: '\x1b[48;5;24m', // 蓝色背景
-  bgGreen: '\x1b[48;5;22m', // 绿色背景
-  bgRed: '\x1b[48;5;52m' // 红色背景
+  bgDark: '\x1B[48;5;235m', // 深灰背景
+  bgBlue: '\x1B[48;5;24m', // 蓝色背景
+  bgGreen: '\x1B[48;5;22m', // 绿色背景
+  bgRed: '\x1B[48;5;52m' // 红色背景
 }
 
 // 现代化图标集
@@ -77,7 +77,7 @@ const fmt = {
 
   // 渐变效果模拟
   gradient: (text: string) => {
-    const colors = ['\x1b[38;5;75m', '\x1b[38;5;81m', '\x1b[38;5;87m', '\x1b[38;5;159m']
+    const colors = ['\x1B[38;5;75m', '\x1B[38;5;81m', '\x1B[38;5;87m', '\x1B[38;5;159m']
     const chars = text.split('')
     return chars.map((char, i) => `${colors[i % colors.length]}${char}`).join('') + theme.reset
   }
@@ -109,7 +109,7 @@ function createModernBanner() {
 
 // 创建分割线
 function createDivider(char = '─', color = theme.primary) {
-  console.log(`${color}${'  ' + char.repeat(66)}${theme.reset}`)
+  console.log(`${color}${`  ${char.repeat(66)}`}${theme.reset}`)
 }
 
 // 创建卡片样式容器
@@ -132,7 +132,7 @@ function createProgressBar(current: number, total: number, text: string, width =
   const emptyBar = '░'.repeat(empty)
 
   process.stdout.write(
-    `\r  ${fmt.info('进度')} [${theme.success}${filledBar}${theme.gray}${emptyBar}${theme.reset}] ${fmt.highlight(percentage + '%')})}`
+    `\r  ${fmt.info('进度')} [${theme.success}${filledBar}${theme.gray}${emptyBar}${theme.reset}] ${fmt.highlight(`${percentage}%`)})}`
   )
 
   if (current === total) {
@@ -230,7 +230,7 @@ async function remove(targetPath: string, index: number) {
     stats.failedPaths++
     console.log()
     console.log(`     ${icons.error} ${fmt.error('删除失败')}: ${fmt.highlight(targetPath)}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${fmt.dim(`错误详情: ${err}`)}`)
   }
 }
 
@@ -372,7 +372,7 @@ export const routeModules: AppRouteRecord[] = [
     console.log(`     ${icons.success} ${fmt.success('清理路由模块完成')}`)
   } catch (err) {
     console.log(`     ${icons.error} ${fmt.error('清理路由模块失败')}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${fmt.dim(`错误详情: ${err}`)}`)
   }
 }
 
@@ -395,7 +395,7 @@ export enum RoutesAlias {
     console.log(`     ${icons.success} ${fmt.success('重写路由别名配置完成')}`)
   } catch (err) {
     console.log(`     ${icons.error} ${fmt.error('清理路由别名失败')}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${fmt.dim(`错误详情: ${err}`)}`)
   }
 }
 
@@ -422,7 +422,7 @@ export const upgradeLogList = ref<UpgradeLog[]>([])
     console.log(`     ${icons.success} ${fmt.success('清空变更日志数据完成')}`)
   } catch (err) {
     console.log(`     ${icons.error} ${fmt.error('清理变更日志失败')}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${fmt.dim(`错误详情: ${err}`)}`)
   }
 }
 
@@ -488,7 +488,7 @@ async function cleanLanguageFiles() {
       console.log(`     ${icons.success} ${fmt.success(`清理${name}完成`)}`)
     } catch (err) {
       console.log(`     ${icons.error} ${fmt.error(`清理${name}失败`)}`)
-      console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+      console.log(`     ${fmt.dim(`错误详情: ${err}`)}`)
     }
   }
 }
@@ -583,7 +583,7 @@ export default Object.freeze(fastEnterConfig)
     console.log(`     ${icons.success} ${fmt.success('清理快速入口配置完成')}`)
   } catch (err) {
     console.log(`     ${icons.error} ${fmt.error('清理快速入口配置失败')}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${fmt.dim(`错误详情: ${err}`)}`)
   }
 }
 
@@ -602,13 +602,13 @@ async function updateMenuApi() {
     console.log(`     ${icons.success} ${fmt.success('更新菜单接口完成')}`)
   } catch (err) {
     console.log(`     ${icons.error} ${fmt.error('更新菜单接口失败')}`)
-    console.log(`     ${fmt.dim('错误详情: ' + err)}`)
+    console.log(`     ${fmt.dim(`错误详情: ${err}`)}`)
   }
 }
 
 // 用户确认函数
 async function getUserConfirmation(): Promise<boolean> {
-  const { createInterface } = await import('readline')
+  const { createInterface } = await import('node:readline')
 
   return new Promise((resolve) => {
     const rl = createInterface({
@@ -832,7 +832,7 @@ async function main() {
 main().catch((err) => {
   console.log()
   console.log(`  ${icons.error} ${fmt.error('清理脚本执行出错')}`)
-  console.log(`  ${fmt.dim('错误详情: ' + err)}`)
+  console.log(`  ${fmt.dim(`错误详情: ${err}`)}`)
   console.log()
   process.exit(1)
 })

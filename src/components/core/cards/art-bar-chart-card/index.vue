@@ -1,37 +1,14 @@
 <!-- 柱状图卡片 -->
-<template>
-  <div class="art-card relative overflow-hidden" :style="{ height: `${height}rem` }">
-    <div class="mb-5 flex-b items-start px-5 pt-5">
-      <div>
-        <p class="m-0 text-2xl font-medium leading-tight text-g-900">
-          {{ value }}
-        </p>
-        <p class="mt-1 text-sm text-g-600">{{ label }}</p>
-      </div>
-      <div
-        class="text-sm font-medium text-danger"
-        :class="[percentage > 0 ? 'text-success' : '', isMiniChart ? 'absolute bottom-5' : '']"
-      >
-        {{ percentage > 0 ? '+' : '' }}{{ percentage }}%
-      </div>
-      <div v-if="date" class="absolute bottom-5 right-5 text-xs text-g-600">
-        {{ date }}
-      </div>
-    </div>
-    <div
-      ref="chartRef"
-      class="absolute bottom-0 left-0 right-0 mx-auto"
-      :class="isMiniChart ? '!absolute !top-5 !right-5 !bottom-auto !left-auto !h-15 !w-4/10' : ''"
-      :style="{ height: isMiniChart ? '60px' : `calc(${height}rem - 5rem)` }"
-    ></div>
-  </div>
-</template>
-
 <script setup lang="ts">
-  import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
-  import { type EChartsOption } from '@/plugins/echarts'
+  import type { EChartsOption } from '@/plugins/echarts'
+  import { useChartComponent, useChartOps } from '@/hooks/core/useChart'
 
   defineOptions({ name: 'ArtBarChartCard' })
+
+  const props = withDefaults(defineProps<Props>(), {
+    height: 11,
+    barWidth: '26%'
+  })
 
   interface Props {
     /** 数值 */
@@ -53,11 +30,6 @@
     /** 是否为迷你图表 */
     isMiniChart?: boolean
   }
-
-  const props = withDefaults(defineProps<Props>(), {
-    height: 11,
-    barWidth: '26%'
-  })
 
   // 使用新的图表组件抽象
   const { chartRef } = useChartComponent({
@@ -101,3 +73,33 @@
     }
   })
 </script>
+
+<template>
+  <div class="art-card relative overflow-hidden" :style="{ height: `${height}rem` }">
+    <div class="mb-5 flex-b items-start px-5 pt-5">
+      <div>
+        <p class="m-0 text-2xl font-medium leading-tight text-g-900">
+          {{ value }}
+        </p>
+        <p class="mt-1 text-sm text-g-600">
+          {{ label }}
+        </p>
+      </div>
+      <div
+        class="text-sm font-medium text-danger"
+        :class="[percentage > 0 ? 'text-success' : '', isMiniChart ? 'absolute bottom-5' : '']"
+      >
+        {{ percentage > 0 ? '+' : '' }}{{ percentage }}%
+      </div>
+      <div v-if="date" class="absolute bottom-5 right-5 text-xs text-g-600">
+        {{ date }}
+      </div>
+    </div>
+    <div
+      ref="chartRef"
+      class="absolute bottom-0 left-0 right-0 mx-auto"
+      :class="isMiniChart ? '!absolute !top-5 !right-5 !bottom-auto !left-auto !h-15 !w-4/10' : ''"
+      :style="{ height: isMiniChart ? '60px' : `calc(${height}rem - 5rem)` }"
+    />
+  </div>
+</template>

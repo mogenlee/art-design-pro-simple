@@ -1,48 +1,15 @@
 <!-- 环型图卡片 -->
-<template>
-  <div class="art-card overflow-hidden" :style="{ height: `${height}rem` }">
-    <div class="flex box-border h-full p-5 pr-2">
-      <div class="flex w-full items-start gap-5">
-        <div class="flex-b h-full flex-1 flex-col">
-          <p class="m-0 text-xl font-medium leading-tight text-g-900">
-            {{ title }}
-          </p>
-          <div>
-            <p class="m-0 mt-2.5 text-xl font-medium leading-tight text-g-900">
-              {{ formatNumber(value) }}
-            </p>
-            <div
-              class="mt-1.5 text-xs font-medium"
-              :class="percentage > 0 ? 'text-success' : 'text-danger'"
-            >
-              {{ percentage > 0 ? '+' : '' }}{{ percentage }}%
-              <span v-if="percentageLabel">{{ percentageLabel }}</span>
-            </div>
-          </div>
-          <div class="mt-2 flex gap-4 text-xs text-g-600">
-            <div v-if="currentValue" class="flex-cc">
-              <div class="size-2 bg-theme/100 rounded mr-2"></div>
-              {{ currentValue }}
-            </div>
-            <div v-if="previousValue" class="flex-cc">
-              <div class="size-2 bg-g-400 rounded mr-2"></div>
-              {{ previousValue }}
-            </div>
-          </div>
-        </div>
-        <div class="flex-c h-full max-w-40 flex-1">
-          <div ref="chartRef" class="h-30 w-full"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-  import { type EChartsOption } from '@/plugins/echarts'
-  import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
+  import type { EChartsOption } from '@/plugins/echarts'
+  import { useChartComponent, useChartOps } from '@/hooks/core/useChart'
 
   defineOptions({ name: 'ArtDonutChartCard' })
+
+  const props = withDefaults(defineProps<Props>(), {
+    height: 9,
+    radius: () => ['70%', '90%'],
+    data: () => [0, 0]
+  })
 
   interface Props {
     /** 数值 */
@@ -67,13 +34,7 @@
     data: [number, number]
   }
 
-  const props = withDefaults(defineProps<Props>(), {
-    height: 9,
-    radius: () => ['70%', '90%'],
-    data: () => [0, 0]
-  })
-
-  const formatNumber = (num: number) => {
+  function formatNumber(num: number) {
     return num.toLocaleString()
   }
 
@@ -122,3 +83,42 @@
     }
   })
 </script>
+
+<template>
+  <div class="art-card overflow-hidden" :style="{ height: `${height}rem` }">
+    <div class="flex box-border h-full p-5 pr-2">
+      <div class="flex w-full items-start gap-5">
+        <div class="flex-b h-full flex-1 flex-col">
+          <p class="m-0 text-xl font-medium leading-tight text-g-900">
+            {{ title }}
+          </p>
+          <div>
+            <p class="m-0 mt-2.5 text-xl font-medium leading-tight text-g-900">
+              {{ formatNumber(value) }}
+            </p>
+            <div
+              class="mt-1.5 text-xs font-medium"
+              :class="percentage > 0 ? 'text-success' : 'text-danger'"
+            >
+              {{ percentage > 0 ? '+' : '' }}{{ percentage }}%
+              <span v-if="percentageLabel">{{ percentageLabel }}</span>
+            </div>
+          </div>
+          <div class="mt-2 flex gap-4 text-xs text-g-600">
+            <div v-if="currentValue" class="flex-cc">
+              <div class="size-2 bg-theme/100 rounded mr-2" />
+              {{ currentValue }}
+            </div>
+            <div v-if="previousValue" class="flex-cc">
+              <div class="size-2 bg-g-400 rounded mr-2" />
+              {{ previousValue }}
+            </div>
+          </div>
+        </div>
+        <div class="flex-c h-full max-w-40 flex-1">
+          <div ref="chartRef" class="h-30 w-full" />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

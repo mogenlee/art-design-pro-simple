@@ -1,37 +1,3 @@
-<template>
-  <ElDialog
-    v-model="visible"
-    :title="dialogType === 'add' ? '新增角色' : '编辑角色'"
-    width="30%"
-    align-center
-    @close="handleClose"
-  >
-    <ElForm ref="formRef" :model="form" :rules="rules" label-width="120px">
-      <ElFormItem label="角色名称" prop="roleName">
-        <ElInput v-model="form.roleName" placeholder="请输入角色名称" />
-      </ElFormItem>
-      <ElFormItem label="角色编码" prop="roleCode">
-        <ElInput v-model="form.roleCode" placeholder="请输入角色编码" />
-      </ElFormItem>
-      <ElFormItem label="描述" prop="description">
-        <ElInput
-          v-model="form.description"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入角色描述"
-        />
-      </ElFormItem>
-      <ElFormItem label="启用">
-        <ElSwitch v-model="form.enabled" />
-      </ElFormItem>
-    </ElForm>
-    <template #footer>
-      <ElButton @click="handleClose">取消</ElButton>
-      <ElButton type="primary" @click="handleSubmit">提交</ElButton>
-    </template>
-  </ElDialog>
-</template>
-
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
 
@@ -118,7 +84,7 @@
    * 初始化表单数据
    * 根据弹窗类型填充表单或重置表单
    */
-  const initForm = () => {
+  function initForm() {
     if (props.dialogType === 'edit' && props.roleData) {
       Object.assign(form, props.roleData)
     } else {
@@ -136,7 +102,7 @@
   /**
    * 关闭弹窗并重置表单
    */
-  const handleClose = () => {
+  function handleClose() {
     visible.value = false
     formRef.value?.resetFields()
   }
@@ -145,7 +111,7 @@
    * 提交表单
    * 验证通过后调用接口保存数据
    */
-  const handleSubmit = async () => {
+  async function handleSubmit() {
     if (!formRef.value) return
 
     try {
@@ -160,3 +126,37 @@
     }
   }
 </script>
+
+<template>
+  <ElDialog
+    v-model="visible"
+    :title="dialogType === 'add' ? '新增角色' : '编辑角色'"
+    width="30%"
+    align-center
+    @close="handleClose"
+  >
+    <ElForm ref="formRef" :model="form" :rules="rules" label-width="120px">
+      <ElFormItem label="角色名称" prop="roleName">
+        <ElInput v-model="form.roleName" placeholder="请输入角色名称" />
+      </ElFormItem>
+      <ElFormItem label="角色编码" prop="roleCode">
+        <ElInput v-model="form.roleCode" placeholder="请输入角色编码" />
+      </ElFormItem>
+      <ElFormItem label="描述" prop="description">
+        <ElInput
+          v-model="form.description"
+          type="textarea"
+          :rows="3"
+          placeholder="请输入角色描述"
+        />
+      </ElFormItem>
+      <ElFormItem label="启用">
+        <ElSwitch v-model="form.enabled" />
+      </ElFormItem>
+    </ElForm>
+    <template #footer>
+      <ElButton @click="handleClose"> 取消 </ElButton>
+      <ElButton type="primary" @click="handleSubmit"> 提交 </ElButton>
+    </template>
+  </ElDialog>
+</template>

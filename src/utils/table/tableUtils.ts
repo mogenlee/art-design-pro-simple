@@ -111,7 +111,7 @@ function extractPagination(
 /**
  * 默认响应适配器 - 支持多种常见的API响应格式
  */
-export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => {
+export function defaultResponseAdapter<T>(response: unknown): ApiResponse<T> {
   // 定义支持的字段
   const recordFields = tableConfig.recordFields
 
@@ -125,9 +125,9 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
 
   if (typeof response !== 'object') {
     console.warn(
-      '[tableUtils] 无法识别的响应格式，支持的格式包括: 数组、包含' +
-        recordFields.join('/') +
-        '字段的对象、嵌套data对象。当前格式:',
+      `[tableUtils] 无法识别的响应格式，支持的格式包括: 数组、包含${recordFields.join(
+        '/'
+      )}字段的对象、嵌套data对象。当前格式:`,
       response
     )
     return { records: [], total: 0 }
@@ -158,7 +158,7 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
 
   if (!recordFields.some((field) => field in res) && records.length === 0) {
     console.warn('[tableUtils] 无法识别的响应格式')
-    console.warn('支持的字段包括: ' + recordFields.join('、'), response)
+    console.warn(`支持的字段包括: ${recordFields.join('、')}`, response)
     console.warn('扩展字段请到 utils/table/tableConfig 文件配置')
   }
 
@@ -172,7 +172,7 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
 /**
  * 从标准化的API响应中提取表格数据
  */
-export const extractTableData = <T>(response: ApiResponse<T>): T[] => {
+export function extractTableData<T>(response: ApiResponse<T>): T[] {
   const data = response.records || response.data || []
   return Array.isArray(data) ? data : []
 }
@@ -180,10 +180,10 @@ export const extractTableData = <T>(response: ApiResponse<T>): T[] => {
 /**
  * 根据API响应更新分页信息
  */
-export const updatePaginationFromResponse = <T>(
+export function updatePaginationFromResponse<T>(
   pagination: Api.Common.PaginationParams,
   response: ApiResponse<T>
-): void => {
+): void {
   pagination.total = response.total ?? pagination.total ?? 0
 
   if (response.current !== undefined) {
@@ -199,10 +199,10 @@ export const updatePaginationFromResponse = <T>(
 /**
  * 创建智能防抖函数 - 支持取消和立即执行
  */
-export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
+export function createSmartDebounce<T extends (...args: any[]) => Promise<any>>(
   fn: T,
   delay: number
-): T & { cancel: () => void; flush: () => Promise<any> } => {
+): T & { cancel: () => void; flush: () => Promise<any> } {
   let timeoutId: NodeJS.Timeout | null = null
   let lastArgs: Parameters<T> | null = null
   let lastResolve: ((value: any) => void) | null = null
@@ -266,10 +266,10 @@ export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
 /**
  * 生成错误处理函数
  */
-export const createErrorHandler = (
+export function createErrorHandler(
   onError?: (error: TableError) => void,
   enableLog: boolean = false
-) => {
+) {
   const logger = {
     error: (message: string, ...args: any[]) => {
       if (enableLog) console.error(`[useTable] ${message}`, ...args)

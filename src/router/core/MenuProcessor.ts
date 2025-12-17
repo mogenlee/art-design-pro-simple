@@ -8,12 +8,12 @@
  */
 
 import type { AppRouteRecord } from '@/types/router'
-import { useUserStore } from '@/store/modules/user'
-import { useAppMode } from '@/hooks/core/useAppMode'
 import { fetchGetMenuList } from '@/api/system-manage'
+import { useAppMode } from '@/hooks/core/useAppMode'
+import { useUserStore } from '@/store/modules/user'
+import { formatMenuTitle } from '@/utils'
 import { asyncRoutes } from '../routes/asyncRoutes'
 import { RoutesAlias } from '../routesAlias'
-import { formatMenuTitle } from '@/utils'
 
 export class MenuProcessor {
   /**

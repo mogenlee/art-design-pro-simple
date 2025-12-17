@@ -1,53 +1,47 @@
 <!-- 图片裁剪组件 github: https://github.com/acccccccb/vue-img-cutter/tree/master -->
-<template>
-  <div class="cutter-container">
-    <div class="cutter-component">
-      <div class="title">{{ title }}</div>
-      <ImgCutter
-        ref="imgCutterModal"
-        @cutDown="cutDownImg"
-        @onPrintImg="cutterPrintImg"
-        @onImageLoadComplete="handleImageLoadComplete"
-        @onImageLoadError="handleImageLoadError"
-        @onClearAll="handleClearAll"
-        v-bind="cutterProps"
-        class="img-cutter"
-      >
-        <template #choose>
-          <ElButton type="primary" plain v-ripple>选择图片</ElButton>
-        </template>
-        <template #cancel>
-          <ElButton type="danger" plain v-ripple>清除</ElButton>
-        </template>
-        <template #confirm>
-          <!-- <ElButton type="primary" style="margin-left: 10px">确定</ElButton> -->
-          <div></div>
-        </template>
-      </ImgCutter>
-    </div>
-
-    <div v-if="showPreview" class="preview-container">
-      <div class="title">{{ previewTitle }}</div>
-      <div
-        class="preview-box"
-        :style="{
-          width: `${cutterProps.cutWidth}px`,
-          height: `${cutterProps.cutHeight}px`
-        }"
-      >
-        <img class="preview-img" :src="temImgPath" alt="预览图" v-if="temImgPath" />
-      </div>
-      <ElButton class="download-btn" @click="downloadImg" :disabled="!temImgPath" v-ripple
-        >下载图片</ElButton
-      >
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
   import ImgCutter from 'vue-img-cutter'
 
   defineOptions({ name: 'ArtCutterImg' })
+
+  const props = withDefaults(defineProps<CutterProps>(), {
+    // 基础配置默认值
+    isModal: false,
+    tool: true,
+    toolBgc: '#fff',
+    title: '',
+    previewTitle: '',
+    showPreview: true,
+
+    // 尺寸相关默认值
+    boxWidth: 700,
+    boxHeight: 458,
+    cutWidth: 470,
+    cutHeight: 270,
+    sizeChange: true,
+
+    // 移动和缩放默认值
+    moveAble: true,
+    imgMove: true,
+    scaleAble: true,
+
+    // 图片相关默认值
+    originalGraph: true,
+    crossOrigin: true,
+    fileType: 'png',
+    quality: 0.9,
+
+    // 水印默认值
+    watermarkText: '',
+    watermarkFontSize: 20,
+    watermarkColor: '#ffffff',
+
+    // 其他功能默认值
+    saveCutPosition: true,
+    previewMode: true
+  })
+
+  const emit = defineEmits(['update:imgUrl', 'error', 'imageLoadComplete', 'imageLoadError'])
 
   interface CutterProps {
     // 基础配置
@@ -118,45 +112,6 @@
     blob: Blob
     dataURL: string
   }
-
-  const props = withDefaults(defineProps<CutterProps>(), {
-    // 基础配置默认值
-    isModal: false,
-    tool: true,
-    toolBgc: '#fff',
-    title: '',
-    previewTitle: '',
-    showPreview: true,
-
-    // 尺寸相关默认值
-    boxWidth: 700,
-    boxHeight: 458,
-    cutWidth: 470,
-    cutHeight: 270,
-    sizeChange: true,
-
-    // 移动和缩放默认值
-    moveAble: true,
-    imgMove: true,
-    scaleAble: true,
-
-    // 图片相关默认值
-    originalGraph: true,
-    crossOrigin: true,
-    fileType: 'png',
-    quality: 0.9,
-
-    // 水印默认值
-    watermarkText: '',
-    watermarkFontSize: 20,
-    watermarkColor: '#ffffff',
-
-    // 其他功能默认值
-    saveCutPosition: true,
-    previewMode: true
-  })
-
-  const emit = defineEmits(['update:imgUrl', 'error', 'imageLoadComplete', 'imageLoadError'])
 
   const temImgPath = ref('')
   const imgCutterModal = ref()
@@ -250,6 +205,55 @@
     a.click()
   }
 </script>
+
+<template>
+  <div class="cutter-container">
+    <div class="cutter-component">
+      <div class="title">
+        {{ title }}
+      </div>
+      <ImgCutter
+        ref="imgCutterModal"
+        v-bind="cutterProps"
+        class="img-cutter"
+        @cut-down="cutDownImg"
+        @on-print-img="cutterPrintImg"
+        @on-image-load-complete="handleImageLoadComplete"
+        @on-image-load-error="handleImageLoadError"
+        @on-clear-all="handleClearAll"
+      >
+        <template #choose>
+          <ElButton v-ripple type="primary" plain> 选择图片 </ElButton>
+        </template>
+        <template #cancel>
+          <ElButton v-ripple type="danger" plain> 清除 </ElButton>
+        </template>
+        <template #confirm>
+          <!-- <ElButton type="primary" style="margin-left: 10px">确定</ElButton> -->
+          <div />
+        </template>
+      </ImgCutter>
+    </div>
+
+    <div v-if="showPreview" class="preview-container">
+      <div class="title">
+        {{ previewTitle }}
+      </div>
+      <div
+        class="preview-box"
+        :style="{
+          width: `${cutterProps.cutWidth}px`,
+          height: `${cutterProps.cutHeight}px`
+        }"
+      >
+        <img v-if="temImgPath" class="preview-img" :src="temImgPath" alt="预览图" />
+      </div>
+      <ElButton v-ripple class="download-btn" :disabled="!temImgPath" @click="downloadImg">
+        下载图片
+      </ElButton>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
   .cutter-container {

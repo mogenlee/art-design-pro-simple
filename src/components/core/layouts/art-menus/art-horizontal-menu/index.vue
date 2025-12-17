@@ -1,36 +1,14 @@
 <!-- 水平菜单 -->
-<template>
-  <div class="flex-1 overflow-hidden">
-    <ElMenu
-      :ellipsis="true"
-      mode="horizontal"
-      :default-active="routerPath"
-      :text-color="isDark ? 'var(--art-gray-800)' : 'var(--art-gray-700)'"
-      :popper-offset="-6"
-      background-color="transparent"
-      :show-timeout="50"
-      :hide-timeout="50"
-      popper-class="horizontal-menu-popper"
-      class="w-full border-none"
-    >
-      <HorizontalSubmenu
-        v-for="item in filteredMenuItems"
-        :key="item.path"
-        :item="item"
-        :isMobile="false"
-        :level="0"
-      />
-    </ElMenu>
-  </div>
-</template>
-
 <script setup lang="ts">
   import type { AppRouteRecord } from '@/types/router'
-  import HorizontalSubmenu from './widget/HorizontalSubmenu.vue'
   import { useSettingStore } from '@/store/modules/setting'
+  import HorizontalSubmenu from './widget/HorizontalSubmenu.vue'
 
   defineOptions({ name: 'ArtHorizontalMenu' })
 
+  const props = withDefaults(defineProps<Props>(), {
+    list: () => []
+  })
   const settingStore = useSettingStore()
   const { isDark } = storeToRefs(settingStore)
 
@@ -40,10 +18,6 @@
   }
 
   const route = useRoute()
-
-  const props = withDefaults(defineProps<Props>(), {
-    list: () => []
-  })
 
   /**
    * 过滤后的菜单项列表
@@ -65,7 +39,7 @@
    * @param items 菜单项数组
    * @returns 过滤后的菜单项数组
    */
-  const filterMenuItems = (items: AppRouteRecord[]): AppRouteRecord[] => {
+  function filterMenuItems(items: AppRouteRecord[]): AppRouteRecord[] {
     return items
       .filter((item) => {
         // 如果当前项被隐藏，直接过滤掉
@@ -89,6 +63,31 @@
       }))
   }
 </script>
+
+<template>
+  <div class="flex-1 overflow-hidden">
+    <ElMenu
+      :ellipsis="true"
+      mode="horizontal"
+      :default-active="routerPath"
+      :text-color="isDark ? 'var(--art-gray-800)' : 'var(--art-gray-700)'"
+      :popper-offset="-6"
+      background-color="transparent"
+      :show-timeout="50"
+      :hide-timeout="50"
+      popper-class="horizontal-menu-popper"
+      class="w-full border-none"
+    >
+      <HorizontalSubmenu
+        v-for="item in filteredMenuItems"
+        :key="item.path"
+        :item="item"
+        :is-mobile="false"
+        :level="0"
+      />
+    </ElMenu>
+  </div>
+</template>
 
 <style scoped>
   /* Remove el-menu bottom border */

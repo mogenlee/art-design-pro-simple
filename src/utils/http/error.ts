@@ -21,9 +21,9 @@
  * @module utils/http/error
  * @author Art Design Pro Team
  */
-import { AxiosError } from 'axios'
-import { ApiStatus } from './status'
+import type { AxiosError } from 'axios'
 import { $t } from '@/locales'
+import { ApiStatus } from './status'
 
 // 错误响应接口
 export interface ErrorResponse {
@@ -97,7 +97,7 @@ export class HttpError extends Error {
  * @param status 错误状态码
  * @returns 错误消息
  */
-const getErrorMessage = (status: number): string => {
+function getErrorMessage(status: number): string {
   const errorMap: Record<number, string> = {
     [ApiStatus.unauthorized]: 'httpMsg.unauthorized',
     [ApiStatus.forbidden]: 'httpMsg.forbidden',
@@ -177,6 +177,6 @@ export function showSuccess(message: string, showMessage: boolean = true): void 
  * @param error 错误对象
  * @returns 是否为 HttpError 类型
  */
-export const isHttpError = (error: unknown): error is HttpError => {
+export function isHttpError(error: unknown): error is HttpError {
   return error instanceof HttpError
 }

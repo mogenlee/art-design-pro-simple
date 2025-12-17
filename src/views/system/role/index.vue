@@ -1,69 +1,13 @@
 <!-- 角色管理页面 -->
-<template>
-  <div class="art-full-height">
-    <RoleSearch
-      v-show="showSearchBar"
-      v-model="searchForm"
-      @search="handleSearch"
-      @reset="resetSearchParams"
-    ></RoleSearch>
-
-    <ElCard
-      class="art-table-card"
-      shadow="never"
-      :style="{ 'margin-top': showSearchBar ? '12px' : '0' }"
-    >
-      <ArtTableHeader
-        v-model:columns="columnChecks"
-        v-model:showSearchBar="showSearchBar"
-        :loading="loading"
-        @refresh="refreshData"
-      >
-        <template #left>
-          <ElSpace wrap>
-            <ElButton @click="showDialog('add')" v-ripple>新增角色</ElButton>
-          </ElSpace>
-        </template>
-      </ArtTableHeader>
-
-      <!-- 表格 -->
-      <ArtTable
-        :loading="loading"
-        :data="data"
-        :columns="columns"
-        :pagination="pagination"
-        @pagination:size-change="handleSizeChange"
-        @pagination:current-change="handleCurrentChange"
-      >
-      </ArtTable>
-    </ElCard>
-
-    <!-- 角色编辑弹窗 -->
-    <RoleEditDialog
-      v-model="dialogVisible"
-      :dialog-type="dialogType"
-      :role-data="currentRoleData"
-      @success="refreshData"
-    />
-
-    <!-- 菜单权限弹窗 -->
-    <RolePermissionDialog
-      v-model="permissionDialog"
-      :role-data="currentRoleData"
-      @success="refreshData"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
-  import { ButtonMoreItem } from '@/components/core/forms/art-button-more/index.vue'
-  import { useTable } from '@/hooks/core/useTable'
+  import type { ButtonMoreItem } from '@/components/core/forms/art-button-more/index.vue'
+  import { ElMessageBox, ElTag } from 'element-plus'
   import { fetchGetRoleList } from '@/api/system-manage'
   import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue'
-  import RoleSearch from './modules/role-search.vue'
+  import { useTable } from '@/hooks/core/useTable'
   import RoleEditDialog from './modules/role-edit-dialog.vue'
   import RolePermissionDialog from './modules/role-permission-dialog.vue'
-  import { ElTag, ElMessageBox } from 'element-plus'
+  import RoleSearch from './modules/role-search.vue'
 
   defineOptions({ name: 'Role' })
 
@@ -185,7 +129,7 @@
 
   const dialogType = ref<'add' | 'edit'>('add')
 
-  const showDialog = (type: 'add' | 'edit', row?: RoleListItem) => {
+  function showDialog(type: 'add' | 'edit', row?: RoleListItem) {
     dialogVisible.value = true
     dialogType.value = type
     currentRoleData.value = row
@@ -195,7 +139,7 @@
    * 搜索处理
    * @param params 搜索参数
    */
-  const handleSearch = (params: Record<string, any>) => {
+  function handleSearch(params: Record<string, any>) {
     // 处理日期区间参数，把 daterange 转换为 startTime 和 endTime
     const { daterange, ...filtersParams } = params
     const [startTime, endTime] = Array.isArray(daterange) ? daterange : [null, null]
@@ -205,7 +149,7 @@
     getData()
   }
 
-  const buttonMoreClick = (item: ButtonMoreItem, row: RoleListItem) => {
+  function buttonMoreClick(item: ButtonMoreItem, row: RoleListItem) {
     switch (item.key) {
       case 'permission':
         showPermissionDialog(row)
@@ -219,12 +163,12 @@
     }
   }
 
-  const showPermissionDialog = (row?: RoleListItem) => {
+  function showPermissionDialog(row?: RoleListItem) {
     permissionDialog.value = true
     currentRoleData.value = row
   }
 
-  const deleteRole = (row: RoleListItem) => {
+  function deleteRole(row: RoleListItem) {
     ElMessageBox.confirm(`确定删除角色"${row.roleName}"吗？此操作不可恢复！`, '删除确认', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -240,3 +184,58 @@
       })
   }
 </script>
+
+<template>
+  <div class="art-full-height">
+    <RoleSearch
+      v-show="showSearchBar"
+      v-model="searchForm"
+      @search="handleSearch"
+      @reset="resetSearchParams"
+    />
+
+    <ElCard
+      class="art-table-card"
+      shadow="never"
+      :style="{ 'margin-top': showSearchBar ? '12px' : '0' }"
+    >
+      <ArtTableHeader
+        v-model:columns="columnChecks"
+        v-model:show-search-bar="showSearchBar"
+        :loading="loading"
+        @refresh="refreshData"
+      >
+        <template #left>
+          <ElSpace wrap>
+            <ElButton v-ripple @click="showDialog('add')"> 新增角色 </ElButton>
+          </ElSpace>
+        </template>
+      </ArtTableHeader>
+
+      <!-- 表格 -->
+      <ArtTable
+        :loading="loading"
+        :data="data"
+        :columns="columns"
+        :pagination="pagination"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+      />
+    </ElCard>
+
+    <!-- 角色编辑弹窗 -->
+    <RoleEditDialog
+      v-model="dialogVisible"
+      :dialog-type="dialogType"
+      :role-data="currentRoleData"
+      @success="refreshData"
+    />
+
+    <!-- 菜单权限弹窗 -->
+    <RolePermissionDialog
+      v-model="permissionDialog"
+      :role-data="currentRoleData"
+      @success="refreshData"
+    />
+  </div>
+</template>

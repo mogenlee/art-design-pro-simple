@@ -1,15 +1,3 @@
-<template>
-  <ArtSearchBar
-    ref="searchBarRef"
-    v-model="formData"
-    :items="formItems"
-    :rules="rules"
-    @reset="handleReset"
-    @search="handleSearch"
-  >
-  </ArtSearchBar>
-</template>
-
 <script setup lang="ts">
   interface Props {
     modelValue: Record<string, any>
@@ -106,7 +94,7 @@
   /**
    * 处理重置事件
    */
-  const handleReset = () => {
+  function handleReset() {
     emit('reset')
   }
 
@@ -114,8 +102,19 @@
    * 处理搜索事件
    * 验证表单后触发搜索
    */
-  const handleSearch = async () => {
+  async function handleSearch() {
     await searchBarRef.value.validate()
     emit('search', formData.value)
   }
 </script>
+
+<template>
+  <ArtSearchBar
+    ref="searchBarRef"
+    v-model="formData"
+    :items="formItems"
+    :rules="rules"
+    @reset="handleReset"
+    @search="handleSearch"
+  />
+</template>

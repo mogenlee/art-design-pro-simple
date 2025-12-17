@@ -32,9 +32,9 @@
  * @author Art Design Pro Team
  */
 
-import { ref, computed, watch } from 'vue'
-import { $t } from '@/locales'
 import type { ColumnOption } from '@/types/component'
+import { computed, ref, watch } from 'vue'
+import { $t } from '@/locales'
 
 /**
  * 特殊列类型
@@ -48,14 +48,15 @@ const SPECIAL_COLUMNS: Record<string, { prop: string; label: string }> = {
 /**
  * 获取列的唯一标识
  */
-export const getColumnKey = <T>(col: ColumnOption<T>) =>
-  SPECIAL_COLUMNS[col.type as keyof typeof SPECIAL_COLUMNS]?.prop ?? (col.prop as string)
+export function getColumnKey<T>(col: ColumnOption<T>) {
+  return SPECIAL_COLUMNS[col.type as keyof typeof SPECIAL_COLUMNS]?.prop ?? (col.prop as string)
+}
 
 /**
  * 获取列的显示状态
  * 优先使用 visible 字段，如果不存在则使用 checked 字段
  */
-export const getColumnVisibility = <T>(col: ColumnOption<T>): boolean => {
+export function getColumnVisibility<T>(col: ColumnOption<T>): boolean {
   // visible 优先级高于 checked
   if (col.visible !== undefined) {
     return col.visible
@@ -67,8 +68,8 @@ export const getColumnVisibility = <T>(col: ColumnOption<T>): boolean => {
 /**
  * 获取列的检查状态
  */
-export const getColumnChecks = <T>(columns: ColumnOption<T>[]) =>
-  columns.map((col) => {
+export function getColumnChecks<T>(columns: ColumnOption<T>[]) {
+  return columns.map((col) => {
     const special = col.type && SPECIAL_COLUMNS[col.type]
     const visibility = getColumnVisibility(col)
 
@@ -77,6 +78,7 @@ export const getColumnChecks = <T>(columns: ColumnOption<T>[]) =>
     }
     return { ...col, checked: visibility, visible: visibility }
   })
+}
 
 /**
  * 动态列配置接口

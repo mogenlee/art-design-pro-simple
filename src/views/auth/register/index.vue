@@ -1,93 +1,7 @@
 <!-- 注册页面 -->
-<template>
-  <div class="flex w-full h-screen">
-    <LoginLeftView />
-
-    <div class="relative flex-1">
-      <AuthTopBar />
-
-      <div class="auth-right-wrap">
-        <div class="form">
-          <h3 class="title">{{ $t('register.title') }}</h3>
-          <p class="sub-title">{{ $t('register.subTitle') }}</p>
-          <ElForm
-            class="mt-7.5"
-            ref="formRef"
-            :model="formData"
-            :rules="rules"
-            label-position="top"
-            :key="formKey"
-          >
-            <ElFormItem prop="username">
-              <ElInput
-                class="custom-height"
-                v-model.trim="formData.username"
-                :placeholder="$t('register.placeholder.username')"
-              />
-            </ElFormItem>
-
-            <ElFormItem prop="password">
-              <ElInput
-                class="custom-height"
-                v-model.trim="formData.password"
-                :placeholder="$t('register.placeholder.password')"
-                type="password"
-                autocomplete="off"
-                show-password
-              />
-            </ElFormItem>
-
-            <ElFormItem prop="confirmPassword">
-              <ElInput
-                class="custom-height"
-                v-model.trim="formData.confirmPassword"
-                :placeholder="$t('register.placeholder.confirmPassword')"
-                type="password"
-                autocomplete="off"
-                @keyup.enter="register"
-                show-password
-              />
-            </ElFormItem>
-
-            <ElFormItem prop="agreement">
-              <ElCheckbox v-model="formData.agreement">
-                {{ $t('register.agreeText') }}
-                <RouterLink
-                  style="color: var(--theme-color); text-decoration: none"
-                  to="/privacy-policy"
-                  >{{ $t('register.privacyPolicy') }}</RouterLink
-                >
-              </ElCheckbox>
-            </ElFormItem>
-
-            <div style="margin-top: 15px">
-              <ElButton
-                class="w-full custom-height"
-                type="primary"
-                @click="register"
-                :loading="loading"
-                v-ripple
-              >
-                {{ $t('register.submitBtnText') }}
-              </ElButton>
-            </div>
-
-            <div class="mt-5 text-sm text-g-600">
-              <span>{{ $t('register.hasAccount') }}</span>
-              <RouterLink class="text-theme" :to="{ name: 'Login' }">{{
-                $t('register.toLogin')
-              }}</RouterLink>
-            </div>
-          </ElForm>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-  import { useI18n } from 'vue-i18n'
   import type { FormInstance, FormRules } from 'element-plus'
+  import { useI18n } from 'vue-i18n'
 
   defineOptions({ name: 'Register' })
 
@@ -126,7 +40,7 @@
    * 验证密码
    * 当密码输入后，如果确认密码已填写，则触发确认密码的验证
    */
-  const validatePassword = (_rule: any, value: string, callback: (error?: Error) => void) => {
+  function validatePassword(_rule: any, value: string, callback: (error?: Error) => void) {
     if (!value) {
       callback(new Error(t('register.placeholder.password')))
       return
@@ -143,11 +57,7 @@
    * 验证确认密码
    * 检查确认密码是否与密码一致
    */
-  const validateConfirmPassword = (
-    _rule: any,
-    value: string,
-    callback: (error?: Error) => void
-  ) => {
+  function validateConfirmPassword(_rule: any, value: string, callback: (error?: Error) => void) {
     if (!value) {
       callback(new Error(t('register.rule.confirmPasswordRequired')))
       return
@@ -165,7 +75,7 @@
    * 验证用户协议
    * 确保用户已勾选同意协议
    */
-  const validateAgreement = (_rule: any, value: boolean, callback: (error?: Error) => void) => {
+  function validateAgreement(_rule: any, value: boolean, callback: (error?: Error) => void) {
     if (!value) {
       callback(new Error(t('register.rule.agreementRequired')))
       return
@@ -195,7 +105,7 @@
    * 注册用户
    * 验证表单后提交注册请求
    */
-  const register = async () => {
+  async function register() {
     if (!formRef.value) return
 
     try {
@@ -228,12 +138,103 @@
   /**
    * 跳转到登录页面
    */
-  const toLogin = () => {
+  function toLogin() {
     setTimeout(() => {
       router.push({ name: 'Login' })
     }, REDIRECT_DELAY)
   }
 </script>
+
+<template>
+  <div class="flex w-full h-screen">
+    <LoginLeftView />
+
+    <div class="relative flex-1">
+      <AuthTopBar />
+
+      <div class="auth-right-wrap">
+        <div class="form">
+          <h3 class="title">
+            {{ $t('register.title') }}
+          </h3>
+          <p class="sub-title">
+            {{ $t('register.subTitle') }}
+          </p>
+          <ElForm
+            ref="formRef"
+            :key="formKey"
+            class="mt-7.5"
+            :model="formData"
+            :rules="rules"
+            label-position="top"
+          >
+            <ElFormItem prop="username">
+              <ElInput
+                v-model.trim="formData.username"
+                class="custom-height"
+                :placeholder="$t('register.placeholder.username')"
+              />
+            </ElFormItem>
+
+            <ElFormItem prop="password">
+              <ElInput
+                v-model.trim="formData.password"
+                class="custom-height"
+                :placeholder="$t('register.placeholder.password')"
+                type="password"
+                autocomplete="off"
+                show-password
+              />
+            </ElFormItem>
+
+            <ElFormItem prop="confirmPassword">
+              <ElInput
+                v-model.trim="formData.confirmPassword"
+                class="custom-height"
+                :placeholder="$t('register.placeholder.confirmPassword')"
+                type="password"
+                autocomplete="off"
+                show-password
+                @keyup.enter="register"
+              />
+            </ElFormItem>
+
+            <ElFormItem prop="agreement">
+              <ElCheckbox v-model="formData.agreement">
+                {{ $t('register.agreeText') }}
+                <RouterLink
+                  style="color: var(--theme-color); text-decoration: none"
+                  to="/privacy-policy"
+                >
+                  {{ $t('register.privacyPolicy') }}
+                </RouterLink>
+              </ElCheckbox>
+            </ElFormItem>
+
+            <div style="margin-top: 15px">
+              <ElButton
+                v-ripple
+                class="w-full custom-height"
+                type="primary"
+                :loading="loading"
+                @click="register"
+              >
+                {{ $t('register.submitBtnText') }}
+              </ElButton>
+            </div>
+
+            <div class="mt-5 text-sm text-g-600">
+              <span>{{ $t('register.hasAccount') }}</span>
+              <RouterLink class="text-theme" :to="{ name: 'Login' }">
+                {{ $t('register.toLogin') }}
+              </RouterLink>
+            </div>
+          </ElForm>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
   @import '../login/style.css';

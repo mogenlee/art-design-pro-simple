@@ -3,53 +3,15 @@
 <!-- art-table-card 一个符合系统样式的 class，同时自动撑满剩余高度 -->
 <!-- 更多 useTable 使用示例请移步至 功能示例 下面的高级表格示例或者查看官方文档 -->
 <!-- useTable 文档：https://www.artd.pro/docs/zh/guide/hooks/use-table.html -->
-<template>
-  <div class="user-page art-full-height">
-    <!-- 搜索栏 -->
-    <UserSearch v-model="searchForm" @search="handleSearch" @reset="resetSearchParams"></UserSearch>
-
-    <ElCard class="art-table-card" shadow="never">
-      <!-- 表格头部 -->
-      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
-        <template #left>
-          <ElSpace wrap>
-            <ElButton @click="showDialog('add')" v-ripple>新增用户</ElButton>
-          </ElSpace>
-        </template>
-      </ArtTableHeader>
-
-      <!-- 表格 -->
-      <ArtTable
-        :loading="loading"
-        :data="data"
-        :columns="columns"
-        :pagination="pagination"
-        @selection-change="handleSelectionChange"
-        @pagination:size-change="handleSizeChange"
-        @pagination:current-change="handleCurrentChange"
-      >
-      </ArtTable>
-
-      <!-- 用户弹窗 -->
-      <UserDialog
-        v-model:visible="dialogVisible"
-        :type="dialogType"
-        :user-data="currentUserData"
-        @submit="handleDialogSubmit"
-      />
-    </ElCard>
-  </div>
-</template>
-
 <script setup lang="ts">
-  import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
-  import { ACCOUNT_TABLE_DATA } from '@/mock/temp/formData'
-  import { useTable } from '@/hooks/core/useTable'
+  import type { DialogType } from '@/types'
+  import { ElImage, ElMessageBox, ElTag } from 'element-plus'
   import { fetchGetUserList } from '@/api/system-manage'
-  import UserSearch from './modules/user-search.vue'
+  import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
+  import { useTable } from '@/hooks/core/useTable'
+  import { ACCOUNT_TABLE_DATA } from '@/mock/temp/formData'
   import UserDialog from './modules/user-dialog.vue'
-  import { ElTag, ElMessageBox, ElImage } from 'element-plus'
-  import { DialogType } from '@/types'
+  import UserSearch from './modules/user-search.vue'
 
   defineOptions({ name: 'User' })
 
@@ -74,16 +36,16 @@
 
   // 用户状态配置
   const USER_STATUS_CONFIG = {
-    '1': { type: 'success' as const, text: '在线' },
-    '2': { type: 'info' as const, text: '离线' },
-    '3': { type: 'warning' as const, text: '异常' },
-    '4': { type: 'danger' as const, text: '注销' }
+    1: { type: 'success' as const, text: '在线' },
+    2: { type: 'info' as const, text: '离线' },
+    3: { type: 'warning' as const, text: '异常' },
+    4: { type: 'danger' as const, text: '注销' }
   } as const
 
   /**
    * 获取用户状态配置
    */
-  const getUserStatusConfig = (status: string) => {
+  function getUserStatusConfig(status: string) {
     return (
       USER_STATUS_CONFIG[status as keyof typeof USER_STATUS_CONFIG] || {
         type: 'info' as const,
@@ -206,7 +168,7 @@
    * 搜索处理
    * @param params 参数
    */
-  const handleSearch = (params: Record<string, any>) => {
+  function handleSearch(params: Record<string, any>) {
     console.log(params)
     // 搜索参数赋值
     Object.assign(searchParams, params)
@@ -216,7 +178,7 @@
   /**
    * 显示用户弹窗
    */
-  const showDialog = (type: DialogType, row?: UserListItem): void => {
+  function showDialog(type: DialogType, row?: UserListItem): void {
     console.log('打开弹窗:', { type, row })
     dialogType.value = type
     currentUserData.value = row || {}
@@ -228,7 +190,7 @@
   /**
    * 删除用户
    */
-  const deleteUser = (row: UserListItem): void => {
+  function deleteUser(row: UserListItem): void {
     console.log('删除用户:', row)
     ElMessageBox.confirm(`确定要注销该用户吗？`, '注销用户', {
       confirmButtonText: '确定',
@@ -242,7 +204,7 @@
   /**
    * 处理弹窗提交事件
    */
-  const handleDialogSubmit = async () => {
+  async function handleDialogSubmit() {
     try {
       dialogVisible.value = false
       currentUserData.value = {}
@@ -254,8 +216,45 @@
   /**
    * 处理表格行选择变化
    */
-  const handleSelectionChange = (selection: UserListItem[]): void => {
+  function handleSelectionChange(selection: UserListItem[]): void {
     selectedRows.value = selection
     console.log('选中行数据:', selectedRows.value)
   }
 </script>
+
+<template>
+  <div class="user-page art-full-height">
+    <!-- 搜索栏 -->
+    <UserSearch v-model="searchForm" @search="handleSearch" @reset="resetSearchParams" />
+
+    <ElCard class="art-table-card" shadow="never">
+      <!-- 表格头部 -->
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+        <template #left>
+          <ElSpace wrap>
+            <ElButton v-ripple @click="showDialog('add')"> 新增用户 </ElButton>
+          </ElSpace>
+        </template>
+      </ArtTableHeader>
+
+      <!-- 表格 -->
+      <ArtTable
+        :loading="loading"
+        :data="data"
+        :columns="columns"
+        :pagination="pagination"
+        @selection-change="handleSelectionChange"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+      />
+
+      <!-- 用户弹窗 -->
+      <UserDialog
+        v-model:visible="dialogVisible"
+        :type="dialogType"
+        :user-data="currentUserData"
+        @submit="handleDialogSubmit"
+      />
+    </ElCard>
+  </div>
+</template>

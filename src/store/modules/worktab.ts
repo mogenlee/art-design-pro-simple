@@ -1,3 +1,5 @@
+import type { LocationQueryRaw, Router } from 'vue-router'
+import type { WorkTab } from '@/types'
 /**
  * 工作标签页状态管理模块
  *
@@ -38,11 +40,9 @@
  * @author Art Design Pro Team
  */
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { router } from '@/router'
-import { LocationQueryRaw, Router } from 'vue-router'
-import { WorkTab } from '@/types'
+import { computed, ref } from 'vue'
 import { useCommon } from '@/hooks/core/useCommon'
+import { router } from '@/router'
 
 interface WorktabState {
   current: Partial<WorkTab>
@@ -500,8 +500,7 @@ export const useWorktabStore = defineStore(
      * 获取标签页标题
      */
     const getTabTitle = (path: string): WorkTab | undefined => {
-      const tab = getTab(path)
-      return tab
+      return getTab(path)
     }
 
     /**

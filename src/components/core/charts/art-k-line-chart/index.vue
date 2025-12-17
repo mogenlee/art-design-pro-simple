@@ -1,17 +1,8 @@
 <!-- k线图表 -->
-<template>
-  <div
-    ref="chartRef"
-    class="relative w-full"
-    :style="{ height: props.height }"
-    v-loading="props.loading"
-  ></div>
-</template>
-
 <script setup lang="ts">
   import type { EChartsOption } from '@/plugins/echarts'
-  import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
   import type { KLineChartProps } from '@/types/component/chart'
+  import { useChartComponent, useChartOps } from '@/hooks/core/useChart'
 
   defineOptions({ name: 'ArtKLineChart' })
 
@@ -30,7 +21,7 @@
   })
 
   // 获取实际使用的颜色
-  const getActualColors = () => {
+  function getActualColors() {
     const defaultUpColor = '#4C87F3'
     const defaultDownColor = '#8BD8FC'
 
@@ -150,3 +141,12 @@
     }
   })
 </script>
+
+<template>
+  <div
+    ref="chartRef"
+    v-loading="props.loading"
+    class="relative w-full"
+    :style="{ height: props.height }"
+  />
+</template>

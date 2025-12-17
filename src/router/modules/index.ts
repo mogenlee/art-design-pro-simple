@@ -1,8 +1,8 @@
-import { AppRouteRecord } from '@/types/router'
+import type { AppRouteRecord } from '@/types/router'
 import { dashboardRoutes } from './dashboard'
-import { systemRoutes } from './system'
-import { resultRoutes } from './result'
 import { exceptionRoutes } from './exception'
+import { resultRoutes } from './result'
+import { systemRoutes } from './system'
 
 /**
  * 导出所有模块化路由

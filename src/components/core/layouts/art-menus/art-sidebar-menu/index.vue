@@ -1,144 +1,13 @@
 <!-- 左侧菜单 或 双列菜单 -->
-<template>
-  <div
-    class="layout-sidebar"
-    v-if="showLeftMenu || isDualMenu"
-    :class="{ 'no-border': menuList.length === 0 }"
-  >
-    <!-- 双列菜单（左侧） -->
-    <div
-      v-if="isDualMenu"
-      class="dual-menu-left"
-      :style="{ width: dualMenuShowText ? '80px' : '64px', background: getMenuTheme.background }"
-    >
-      <ArtLogo class="logo" @click="navigateToHome" />
-
-      <ElScrollbar style="height: calc(100% - 135px)">
-        <ul>
-          <li v-for="menu in firstLevelMenus" :key="menu.path" @click="handleMenuJump(menu, true)">
-            <ElTooltip
-              class="box-item"
-              effect="dark"
-              :content="$t(menu.meta.title)"
-              placement="right"
-              :offset="15"
-              :hide-after="0"
-              :disabled="dualMenuShowText"
-            >
-              <div
-                :class="{
-                  'is-active': menu.meta.isFirstLevel
-                    ? menu.path === route.path
-                    : menu.path === firstLevelMenuPath
-                }"
-                :style="{
-                  height: dualMenuShowText ? '60px' : '46px'
-                }"
-              >
-                <ArtSvgIcon
-                  class="menu-icon text-g-700 dark:text-g-800"
-                  :icon="menu.meta.icon"
-                  :style="{
-                    marginBottom: dualMenuShowText ? '5px' : '0'
-                  }"
-                />
-                <span v-if="dualMenuShowText" class="text-md text-g-700">
-                  {{ $t(menu.meta.title) }}
-                </span>
-                <div v-if="menu.meta.showBadge" class="art-badge art-badge-dual" />
-              </div>
-            </ElTooltip>
-          </li>
-        </ul>
-      </ElScrollbar>
-
-      <ArtIconButton
-        class="switch-btn size-10"
-        icon="ri:arrow-left-right-fill"
-        @click="toggleDualMenuMode"
-      />
-    </div>
-
-    <!-- 左侧菜单 || 双列菜单（右侧） -->
-    <div
-      v-show="menuList.length > 0"
-      class="menu-left"
-      :class="`menu-left-${getMenuTheme.theme} menu-left-${!menuOpen ? 'close' : 'open'}`"
-      :style="{ background: getMenuTheme.background }"
-    >
-      <ElScrollbar :style="scrollbarStyle">
-        <!-- Logo、系统名称 -->
-        <div
-          class="header"
-          @click="navigateToHome"
-          :style="{
-            background: getMenuTheme.background
-          }"
-        >
-          <ArtLogo v-if="!isDualMenu" class="logo" />
-
-          <p
-            :class="{ 'is-dual-menu-name': isDualMenu }"
-            :style="{
-              color: getMenuTheme.systemNameColor,
-              opacity: !menuOpen ? 0 : 1
-            }"
-          >
-            {{ AppConfig.systemInfo.name }}
-          </p>
-        </div>
-
-        <ElMenu
-          :class="'el-menu-' + getMenuTheme.theme"
-          :collapse="!menuOpen"
-          :default-active="routerPath"
-          :text-color="getMenuTheme.textColor"
-          :unique-opened="uniqueOpened"
-          :background-color="getMenuTheme.background"
-          :default-openeds="defaultOpenedMenus"
-          :popper-class="`menu-left-popper menu-left-${getMenuTheme.theme}-popper`"
-          :show-timeout="50"
-          :hide-timeout="50"
-        >
-          <SidebarSubmenu
-            :list="menuList"
-            :isMobile="isMobileMode"
-            :theme="getMenuTheme"
-            @close="handleMenuClose"
-          />
-        </ElMenu>
-      </ElScrollbar>
-
-      <!-- 双列菜单右侧折叠按钮 -->
-      <div class="dual-menu-collapse-btn" v-if="isDualMenu" @click="toggleMenuVisibility">
-        <ArtSvgIcon
-          class="text-g-500/70"
-          :icon="menuOpen ? 'ri:arrow-left-wide-fill' : 'ri:arrow-right-wide-fill'"
-        />
-      </div>
-
-      <div
-        class="menu-model"
-        @click="toggleMenuVisibility"
-        :style="{
-          opacity: !menuOpen ? 0 : 1,
-          transform: showMobileModal ? 'scale(1)' : 'scale(0)'
-        }"
-      />
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
+  import { useTimeoutFn, useWindowSize } from '@vueuse/core'
   import AppConfig from '@/config'
-  import { useSettingStore } from '@/store/modules/setting'
   import { MenuTypeEnum, MenuWidth } from '@/enums/appEnum'
-  import { useMenuStore } from '@/store/modules/menu'
-  import { isIframe } from '@/utils/navigation'
-  import { handleMenuJump } from '@/utils/navigation'
-  import SidebarSubmenu from './widget/SidebarSubmenu.vue'
   import { useCommon } from '@/hooks/core/useCommon'
-  import { useWindowSize, useTimeoutFn } from '@vueuse/core'
+  import { useMenuStore } from '@/store/modules/menu'
+  import { useSettingStore } from '@/store/modules/setting'
+  import { handleMenuJump, isIframe } from '@/utils/navigation'
+  import SidebarSubmenu from './widget/SidebarSubmenu.vue'
 
   defineOptions({ name: 'ArtSidebarMenu' })
 
@@ -233,7 +102,7 @@
   /**
    * 查找 iframe 对应的二级菜单列表
    */
-  const findIframeMenuList = (currentPath: string, menuList: any[]) => {
+  function findIframeMenuList(currentPath: string, menuList: any[]) {
     // 递归查找包含当前路径的菜单项
     const hasPath = (items: any[]): boolean => {
       for (const item of items) {
@@ -261,14 +130,14 @@
   /**
    * 导航到首页
    */
-  const navigateToHome = (): void => {
+  function navigateToHome(): void {
     router.push(homePath.value)
   }
 
   /**
    * 切换菜单显示/隐藏
    */
-  const toggleMenuVisibility = (): void => {
+  function toggleMenuVisibility(): void {
     settingStore.setMenuOpen(!menuOpen.value)
 
     // 移动端模态框控制逻辑
@@ -286,7 +155,7 @@
   /**
    * 处理菜单关闭（来自子组件）
    */
-  const handleMenuClose = (): void => {
+  function handleMenuClose(): void {
     if (isMobileScreen.value) {
       settingStore.setMenuOpen(false)
       delayHideMobileModal()
@@ -296,7 +165,7 @@
   /**
    * 切换双列菜单模式
    */
-  const toggleDualMenuMode = (): void => {
+  function toggleDualMenuMode(): void {
     settingStore.setDualMenuShowText(!dualMenuShowText.value)
   }
 
@@ -333,6 +202,136 @@
     }
   })
 </script>
+
+<template>
+  <div
+    v-if="showLeftMenu || isDualMenu"
+    class="layout-sidebar"
+    :class="{ 'no-border': menuList.length === 0 }"
+  >
+    <!-- 双列菜单（左侧） -->
+    <div
+      v-if="isDualMenu"
+      class="dual-menu-left"
+      :style="{ width: dualMenuShowText ? '80px' : '64px', background: getMenuTheme.background }"
+    >
+      <ArtLogo class="logo" @click="navigateToHome" />
+
+      <ElScrollbar style="height: calc(100% - 135px)">
+        <ul>
+          <li v-for="menu in firstLevelMenus" :key="menu.path" @click="handleMenuJump(menu, true)">
+            <ElTooltip
+              class="box-item"
+              effect="dark"
+              :content="$t(menu.meta.title)"
+              placement="right"
+              :offset="15"
+              :hide-after="0"
+              :disabled="dualMenuShowText"
+            >
+              <div
+                :class="{
+                  'is-active': menu.meta.isFirstLevel
+                    ? menu.path === route.path
+                    : menu.path === firstLevelMenuPath
+                }"
+                :style="{
+                  height: dualMenuShowText ? '60px' : '46px'
+                }"
+              >
+                <ArtSvgIcon
+                  class="menu-icon text-g-700 dark:text-g-800"
+                  :icon="menu.meta.icon"
+                  :style="{
+                    marginBottom: dualMenuShowText ? '5px' : '0'
+                  }"
+                />
+                <span v-if="dualMenuShowText" class="text-md text-g-700">
+                  {{ $t(menu.meta.title) }}
+                </span>
+                <div v-if="menu.meta.showBadge" class="art-badge art-badge-dual" />
+              </div>
+            </ElTooltip>
+          </li>
+        </ul>
+      </ElScrollbar>
+
+      <ArtIconButton
+        class="switch-btn size-10"
+        icon="ri:arrow-left-right-fill"
+        @click="toggleDualMenuMode"
+      />
+    </div>
+
+    <!-- 左侧菜单 || 双列菜单（右侧） -->
+    <div
+      v-show="menuList.length > 0"
+      class="menu-left"
+      :class="`menu-left-${getMenuTheme.theme} menu-left-${!menuOpen ? 'close' : 'open'}`"
+      :style="{ background: getMenuTheme.background }"
+    >
+      <ElScrollbar :style="scrollbarStyle">
+        <!-- Logo、系统名称 -->
+        <div
+          class="header"
+          :style="{
+            background: getMenuTheme.background
+          }"
+          @click="navigateToHome"
+        >
+          <ArtLogo v-if="!isDualMenu" class="logo" />
+
+          <p
+            :class="{ 'is-dual-menu-name': isDualMenu }"
+            :style="{
+              color: getMenuTheme.systemNameColor,
+              opacity: !menuOpen ? 0 : 1
+            }"
+          >
+            {{ AppConfig.systemInfo.name }}
+          </p>
+        </div>
+
+        <ElMenu
+          :class="`el-menu-${getMenuTheme.theme}`"
+          :collapse="!menuOpen"
+          :default-active="routerPath"
+          :text-color="getMenuTheme.textColor"
+          :unique-opened="uniqueOpened"
+          :background-color="getMenuTheme.background"
+          :default-openeds="defaultOpenedMenus"
+          :popper-class="`menu-left-popper menu-left-${getMenuTheme.theme}-popper`"
+          :show-timeout="50"
+          :hide-timeout="50"
+        >
+          <SidebarSubmenu
+            :list="menuList"
+            :is-mobile="isMobileMode"
+            :theme="getMenuTheme"
+            @close="handleMenuClose"
+          />
+        </ElMenu>
+      </ElScrollbar>
+
+      <!-- 双列菜单右侧折叠按钮 -->
+      <div v-if="isDualMenu" class="dual-menu-collapse-btn" @click="toggleMenuVisibility">
+        <ArtSvgIcon
+          class="text-g-500/70"
+          :icon="menuOpen ? 'ri:arrow-left-wide-fill' : 'ri:arrow-right-wide-fill'"
+        />
+      </div>
+
+      <div
+        class="menu-model"
+        :style="{
+          opacity: !menuOpen ? 0 : 1,
+          transform: showMobileModal ? 'scale(1)' : 'scale(0)'
+        }"
+        @click="toggleMenuVisibility"
+      />
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
   @use './style';

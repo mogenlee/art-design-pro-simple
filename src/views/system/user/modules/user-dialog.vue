@@ -1,46 +1,6 @@
-<template>
-  <ElDialog
-    v-model="dialogVisible"
-    :title="dialogType === 'add' ? '添加用户' : '编辑用户'"
-    width="30%"
-    align-center
-  >
-    <ElForm ref="formRef" :model="formData" :rules="rules" label-width="80px">
-      <ElFormItem label="用户名" prop="username">
-        <ElInput v-model="formData.username" placeholder="请输入用户名" />
-      </ElFormItem>
-      <ElFormItem label="手机号" prop="phone">
-        <ElInput v-model="formData.phone" placeholder="请输入手机号" />
-      </ElFormItem>
-      <ElFormItem label="性别" prop="gender">
-        <ElSelect v-model="formData.gender">
-          <ElOption label="男" value="男" />
-          <ElOption label="女" value="女" />
-        </ElSelect>
-      </ElFormItem>
-      <ElFormItem label="角色" prop="role">
-        <ElSelect v-model="formData.role" multiple>
-          <ElOption
-            v-for="role in roleList"
-            :key="role.roleCode"
-            :value="role.roleCode"
-            :label="role.roleName"
-          />
-        </ElSelect>
-      </ElFormItem>
-    </ElForm>
-    <template #footer>
-      <div class="dialog-footer">
-        <ElButton @click="dialogVisible = false">取消</ElButton>
-        <ElButton type="primary" @click="handleSubmit">提交</ElButton>
-      </div>
-    </template>
-  </ElDialog>
-</template>
-
 <script setup lang="ts">
-  import { ROLE_LIST_DATA } from '@/mock/temp/formData'
   import type { FormInstance, FormRules } from 'element-plus'
+  import { ROLE_LIST_DATA } from '@/mock/temp/formData'
 
   interface Props {
     visible: boolean
@@ -96,7 +56,7 @@
    * 初始化表单数据
    * 根据对话框类型（新增/编辑）填充表单
    */
-  const initFormData = () => {
+  function initFormData() {
     const isEdit = props.type === 'edit' && props.userData
     const row = props.userData
 
@@ -129,7 +89,7 @@
    * 提交表单
    * 验证通过后触发提交事件
    */
-  const handleSubmit = async () => {
+  async function handleSubmit() {
     if (!formRef.value) return
 
     await formRef.value.validate((valid) => {
@@ -141,3 +101,43 @@
     })
   }
 </script>
+
+<template>
+  <ElDialog
+    v-model="dialogVisible"
+    :title="dialogType === 'add' ? '添加用户' : '编辑用户'"
+    width="30%"
+    align-center
+  >
+    <ElForm ref="formRef" :model="formData" :rules="rules" label-width="80px">
+      <ElFormItem label="用户名" prop="username">
+        <ElInput v-model="formData.username" placeholder="请输入用户名" />
+      </ElFormItem>
+      <ElFormItem label="手机号" prop="phone">
+        <ElInput v-model="formData.phone" placeholder="请输入手机号" />
+      </ElFormItem>
+      <ElFormItem label="性别" prop="gender">
+        <ElSelect v-model="formData.gender">
+          <ElOption label="男" value="男" />
+          <ElOption label="女" value="女" />
+        </ElSelect>
+      </ElFormItem>
+      <ElFormItem label="角色" prop="role">
+        <ElSelect v-model="formData.role" multiple>
+          <ElOption
+            v-for="role in roleList"
+            :key="role.roleCode"
+            :value="role.roleCode"
+            :label="role.roleName"
+          />
+        </ElSelect>
+      </ElFormItem>
+    </ElForm>
+    <template #footer>
+      <div class="dialog-footer">
+        <ElButton @click="dialogVisible = false"> 取消 </ElButton>
+        <ElButton type="primary" @click="handleSubmit"> 提交 </ElButton>
+      </div>
+    </template>
+  </ElDialog>
+</template>

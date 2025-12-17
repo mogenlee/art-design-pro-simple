@@ -1,7 +1,7 @@
 {
   "name": "art-design-pro",
-  "version": "0.0.0",
   "type": "module",
+  "version": "0.0.0",
   "engines": {
     "node": ">=20.19.0",
     "pnpm": ">=8.8.0"
@@ -23,33 +23,6 @@
     "commitizen": {
       "path": "node_modules/cz-git"
     }
-  },
-  "lint-staged": {
-    "*.{js,ts,mjs,mts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{cjs,json,jsonc}": [
-      "prettier --write"
-    ],
-    "*.vue": [
-      "eslint --fix",
-      "stylelint --fix --allow-empty-input",
-      "prettier --write"
-    ],
-    "*.{html,htm}": [
-      "prettier --write"
-    ],
-    "*.{scss,css,less}": [
-      "stylelint --fix --allow-empty-input",
-      "prettier --write"
-    ],
-    "*.{md,mdx}": [
-      "prettier --write"
-    ],
-    "*.{yaml,yml}": [
-      "prettier --write"
-    ]
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
@@ -80,21 +53,15 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^6.7.1",
     "@commitlint/cli": "^19.4.1",
     "@commitlint/config-conventional": "^19.4.1",
-    "@eslint/js": "^9.9.1",
     "@types/node": "^24.0.5",
-    "@typescript-eslint/eslint-plugin": "^8.3.0",
-    "@typescript-eslint/parser": "^8.3.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/compiler-sfc": "^3.0.5",
     "commitizen": "^4.3.0",
     "cz-git": "^1.11.1",
-    "eslint": "^9.9.1",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-vue": "^9.27.0",
-    "globals": "^15.9.0",
+    "eslint": "^9.39.2",
     "husky": "^9.1.5",
     "lint-staged": "^15.5.2",
     "prettier": "^3.5.3",
@@ -109,7 +76,6 @@
     "terser": "^5.36.0",
     "tsx": "^4.20.3",
     "typescript": "~5.6.3",
-    "typescript-eslint": "^8.9.0",
     "unplugin-auto-import": "^20.2.0",
     "unplugin-element-plus": "^0.10.0",
     "unplugin-vue-components": "^29.1.0",
@@ -119,5 +85,32 @@
     "vue-demi": "^0.14.9",
     "vue-img-cutter": "^3.0.5",
     "vue-tsc": "~2.1.6"
+  },
+  "lint-staged": {
+    "*.{js,ts,mjs,mts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{cjs,json,jsonc}": [
+      "prettier --write"
+    ],
+    "*.vue": [
+      "eslint --fix",
+      "stylelint --fix --allow-empty-input",
+      "prettier --write"
+    ],
+    "*.{html,htm}": [
+      "prettier --write"
+    ],
+    "*.{scss,css,less}": [
+      "stylelint --fix --allow-empty-input",
+      "prettier --write"
+    ],
+    "*.{md,mdx}": [
+      "prettier --write"
+    ],
+    "*.{yaml,yml}": [
+      "prettier --write"
+    ]
   }
 }

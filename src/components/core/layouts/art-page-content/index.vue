@@ -1,52 +1,4 @@
 <!-- 布局内容 -->
-<template>
-  <div class="layout-content" :class="{ 'overflow-auto': isFullPage }" :style="containerStyle">
-    <div id="app-content-header">
-      <!-- 节日滚动 -->
-      <ArtFestivalTextScroll v-if="!isFullPage" />
-
-      <!-- 路由信息调试 -->
-      <div
-        v-if="isOpenRouteInfo === 'true'"
-        class="px-2 py-1.5 mb-3 text-sm text-g-500 bg-g-200 border-full-d rounded-md"
-      >
-        router meta：{{ route.meta }}
-      </div>
-    </div>
-
-    <RouterView v-if="isRefresh" v-slot="{ Component, route }" :style="contentStyle">
-      <!-- 缓存路由动画 -->
-      <Transition :name="showTransitionMask ? '' : actualTransition" mode="out-in" appear>
-        <KeepAlive :max="10" :exclude="keepAliveExclude">
-          <component
-            class="art-page-view"
-            :is="Component"
-            :key="route.path"
-            v-if="route.meta.keepAlive"
-          />
-        </KeepAlive>
-      </Transition>
-
-      <!-- 非缓存路由动画 -->
-      <Transition :name="showTransitionMask ? '' : actualTransition" mode="out-in" appear>
-        <component
-          class="art-page-view"
-          :is="Component"
-          :key="route.path"
-          v-if="!route.meta.keepAlive"
-        />
-      </Transition>
-    </RouterView>
-
-    <!-- 全屏页面切换过渡遮罩（用于提升页面切换视觉体验） -->
-    <Teleport to="body">
-      <div
-        v-show="showTransitionMask"
-        class="fixed top-0 left-0 z-[2000] w-screen h-screen pointer-events-none bg-box"
-      />
-    </Teleport>
-  </div>
-</template>
 <script setup lang="ts">
   import type { CSSProperties } from 'vue'
   import { useRoute } from 'vue-router'
@@ -117,7 +69,7 @@
     })
   )
 
-  const reload = () => {
+  function reload() {
     isRefresh.value = false
     nextTick(() => {
       isRefresh.value = true
@@ -134,3 +86,52 @@
     })
   })
 </script>
+
+<template>
+  <div class="layout-content" :class="{ 'overflow-auto': isFullPage }" :style="containerStyle">
+    <div id="app-content-header">
+      <!-- 节日滚动 -->
+      <ArtFestivalTextScroll v-if="!isFullPage" />
+
+      <!-- 路由信息调试 -->
+      <div
+        v-if="isOpenRouteInfo === 'true'"
+        class="px-2 py-1.5 mb-3 text-sm text-g-500 bg-g-200 border-full-d rounded-md"
+      >
+        router meta：{{ route.meta }}
+      </div>
+    </div>
+
+    <RouterView v-if="isRefresh" v-slot="{ Component, route }" :style="contentStyle">
+      <!-- 缓存路由动画 -->
+      <Transition :name="showTransitionMask ? '' : actualTransition" mode="out-in" appear>
+        <KeepAlive :max="10" :exclude="keepAliveExclude">
+          <component
+            :is="Component"
+            v-if="route.meta.keepAlive"
+            :key="route.path"
+            class="art-page-view"
+          />
+        </KeepAlive>
+      </Transition>
+
+      <!-- 非缓存路由动画 -->
+      <Transition :name="showTransitionMask ? '' : actualTransition" mode="out-in" appear>
+        <component
+          :is="Component"
+          v-if="!route.meta.keepAlive"
+          :key="route.path"
+          class="art-page-view"
+        />
+      </Transition>
+    </RouterView>
+
+    <!-- 全屏页面切换过渡遮罩（用于提升页面切换视觉体验） -->
+    <Teleport to="body">
+      <div
+        v-show="showTransitionMask"
+        class="fixed top-0 left-0 z-[2000] w-screen h-screen pointer-events-none bg-box"
+      />
+    </Teleport>
+  </div>
+</template>

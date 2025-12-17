@@ -1,12 +1,8 @@
 <!-- 双向堆叠柱状图 -->
-<template>
-  <div ref="chartRef" :style="{ height: props.height }" v-loading="props.loading"> </div>
-</template>
-
 <script setup lang="ts">
-  import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
-  import type { EChartsOption, BarSeriesOption } from '@/plugins/echarts'
+  import type { BarSeriesOption, EChartsOption } from '@/plugins/echarts'
   import type { BidirectionalBarChartProps } from '@/types/component/chart'
+  import { useChartComponent, useChartOps } from '@/hooks/core/useChart'
 
   defineOptions({ name: 'ArtDualBarCompareChart' })
 
@@ -44,14 +40,14 @@
   })
 
   // 创建系列配置的辅助函数
-  const createSeriesConfig = (config: {
+  function createSeriesConfig(config: {
     name: string
     data: number[]
     borderRadius: number | number[]
     labelPosition: 'top' | 'bottom'
     colorIndex: number
     formatter?: (params: unknown) => string
-  }): BarSeriesOption => {
+  }): BarSeriesOption {
     const { fontColor } = useChartOps()
     const animationConfig = getAnimationConfig()
 
@@ -193,3 +189,7 @@
     }
   })
 </script>
+
+<template>
+  <div ref="chartRef" v-loading="props.loading" :style="{ height: props.height }" />
+</template>

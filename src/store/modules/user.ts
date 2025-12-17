@@ -1,3 +1,4 @@
+import type { AppRouteRecord } from '@/types/router'
 /**
  * 用户状态管理模块
  *
@@ -32,16 +33,15 @@
  * @author Art Design Pro Team
  */
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { LanguageEnum } from '@/enums/appEnum'
 import { router } from '@/router'
+import { resetRouterState } from '@/router/guards/beforeEach'
+import { setPageTitle } from '@/utils/router'
+import { StorageConfig } from '@/utils/storage/storage-config'
+import { useMenuStore } from './menu'
 import { useSettingStore } from './setting'
 import { useWorktabStore } from './worktab'
-import { AppRouteRecord } from '@/types/router'
-import { setPageTitle } from '@/utils/router'
-import { resetRouterState } from '@/router/guards/beforeEach'
-import { useMenuStore } from './menu'
-import { StorageConfig } from '@/utils/storage/storage-config'
 
 /**
  * 用户状态管理

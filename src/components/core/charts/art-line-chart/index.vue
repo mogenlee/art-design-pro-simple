@@ -1,19 +1,10 @@
 <!-- 折线图，支持多组数据，支持阶梯式动画效果 -->
-<template>
-  <div
-    ref="chartRef"
-    class="relative w-[calc(100%+10px)]"
-    :style="{ height: props.height }"
-    v-loading="props.loading"
-  >
-  </div>
-</template>
-
 <script setup lang="ts">
-  import { graphic, type EChartsOption } from '@/plugins/echarts'
-  import { getCssVar, hexToRgba } from '@/utils/ui'
-  import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
+  import type { EChartsOption } from '@/plugins/echarts'
   import type { LineChartProps, LineDataItem } from '@/types/component/chart'
+  import { useChartComponent, useChartOps } from '@/hooks/core/useChart'
+  import { graphic } from '@/plugins/echarts'
+  import { getCssVar, hexToRgba } from '@/utils/ui'
 
   defineOptions({ name: 'ArtLineChart' })
 
@@ -51,7 +42,7 @@
   const animatedData = ref<number[] | LineDataItem[]>([])
 
   // 清理所有定时器
-  const clearAnimationTimers = () => {
+  function clearAnimationTimers() {
     animationTimers.value.forEach((timer) => clearTimeout(timer))
     animationTimers.value = []
   }
@@ -84,20 +75,20 @@
   })
 
   // 初始化动画数据（优化：减少条件判断）
-  const initAnimationData = (): number[] | LineDataItem[] => {
+  function initAnimationData(): number[] | LineDataItem[] {
     if (isMultipleData.value) {
       const multiData = props.data as LineDataItem[]
       return multiData.map((item) => ({
         ...item,
-        data: Array(item.data.length).fill(0)
+        data: Array.from({ length: item.data.length }).fill(0)
       }))
     }
     const singleData = props.data as number[]
-    return Array(singleData.length).fill(0)
+    return Array.from({ length: singleData.length }).fill(0)
   }
 
   // 复制真实数据（优化：使用结构化克隆）
-  const copyRealData = (): number[] | LineDataItem[] => {
+  function copyRealData(): number[] | LineDataItem[] {
     if (isMultipleData.value) {
       return (props.data as LineDataItem[]).map((item) => ({ ...item, data: [...item.data] }))
     }
@@ -107,14 +98,14 @@
   // 获取颜色配置（优化：缓存主题色）
   const primaryColor = computed(() => getCssVar('--el-color-primary'))
 
-  const getColor = (customColor?: string, index?: number): string => {
+  function getColor(customColor?: string, index?: number): string {
     if (customColor) return customColor
     if (index !== undefined) return props.colors![index % props.colors!.length]
     return primaryColor.value
   }
 
   // 生成区域样式
-  const generateAreaStyle = (item: LineDataItem, color: string) => {
+  function generateAreaStyle(item: LineDataItem, color: string) {
     // 如果有 areaStyle 配置，或者显式开启了区域颜色，则显示区域样式
     if (!item.areaStyle && !item.showAreaColor && !props.showAreaColor) return undefined
 
@@ -136,7 +127,7 @@
   }
 
   // 生成单数据区域样式
-  const generateSingleAreaStyle = () => {
+  function generateSingleAreaStyle() {
     if (!props.showAreaColor) return undefined
 
     const color = getColor(props.colors[0])
@@ -155,7 +146,7 @@
   }
 
   // 创建系列配置
-  const createSeriesItem = (config: {
+  function createSeriesItem(config: {
     name?: string
     data: number[]
     color?: string
@@ -164,7 +155,7 @@
     symbolSize?: number
     lineWidth?: number
     areaStyle?: any
-  }) => {
+  }) {
     return {
       name: config.name,
       data: config.data,
@@ -188,7 +179,7 @@
   }
 
   // 生成图表配置
-  const generateChartOptions = (isInitial = false): EChartsOption => {
+  function generateChartOptions(isInitial = false): EChartsOption {
     const options: EChartsOption = {
       animation: true,
       animationDuration: isInitial ? 0 : 1300,
@@ -258,12 +249,12 @@
   }
 
   // 更新图表
-  const updateChartOptions = (options: EChartsOption) => {
+  function updateChartOptions(options: EChartsOption) {
     initChart(options)
   }
 
   // 初始化动画函数（优化：统一定时器管理，减少内存泄漏风险）
-  const initChartWithAnimation = () => {
+  function initChartWithAnimation() {
     clearAnimationTimers()
     isAnimating.value = true
 
@@ -306,7 +297,7 @@
   }
 
   // 空数据检查函数
-  const checkIsEmpty = () => {
+  function checkIsEmpty() {
     // 检查单数据情况
     if (Array.isArray(props.data) && typeof props.data[0] === 'number') {
       const singleData = props.data as number[]
@@ -351,7 +342,7 @@
   })
 
   // 图表渲染函数（优化：防止动画期间重复触发）
-  const renderChart = () => {
+  function renderChart() {
     if (!isAnimating.value && !isEmpty.value) {
       initChartWithAnimation()
     }
@@ -369,3 +360,12 @@
     clearAnimationTimers()
   })
 </script>
+
+<template>
+  <div
+    ref="chartRef"
+    v-loading="props.loading"
+    class="relative w-[calc(100%+10px)]"
+    :style="{ height: props.height }"
+  />
+</template>

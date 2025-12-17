@@ -1,4 +1,10 @@
 <!-- 403页面 -->
+<script setup lang="ts">
+  import imgUrl from '@imgs/svg/403.svg'
+
+  defineOptions({ name: 'Exception403' })
+</script>
+
 <template>
   <ArtException
     :data="{
@@ -9,8 +15,3 @@
     }"
   />
 </template>
-
-<script setup lang="ts">
-  import imgUrl from '@imgs/svg/403.svg'
-  defineOptions({ name: 'Exception403' })
-</script>

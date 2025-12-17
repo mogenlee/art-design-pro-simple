@@ -1,16 +1,7 @@
 <!-- 数字滚动 -->
-<template>
-  <span
-    class="text-g-900 tabular-nums"
-    :class="isRunning ? 'transition-opacity duration-300 ease-in-out' : ''"
-  >
-    {{ formattedValue }}
-  </span>
-</template>
-
 <script setup lang="ts">
-  import { computed, watch, nextTick, onUnmounted, shallowRef } from 'vue'
-  import { useTransition, TransitionPresets } from '@vueuse/core'
+  import { TransitionPresets, useTransition } from '@vueuse/core'
+  import { computed, nextTick, onUnmounted, shallowRef, watch } from 'vue'
 
   // 类型定义
   interface CountToProps {
@@ -56,14 +47,6 @@
     readonly progress: number
   }
 
-  // 常量定义
-  const EPSILON = Number.EPSILON
-  const MIN_DURATION = 100
-  const MAX_DURATION = 60000
-  const MAX_DECIMALS = 10
-  const DEFAULT_EASING = 'easeOutExpo'
-  const DEFAULT_DURATION = 2000
-
   const props = withDefaults(defineProps<CountToProps>(), {
     target: 0,
     duration: DEFAULT_DURATION,
@@ -76,11 +59,17 @@
     easing: DEFAULT_EASING,
     disabled: false
   })
-
   const emit = defineEmits<CountToEmits>()
+  // 常量定义
+  const EPSILON = Number.EPSILON
+  const MIN_DURATION = 100
+  const MAX_DURATION = 60000
+  const MAX_DECIMALS = 10
+  const DEFAULT_EASING = 'easeOutExpo'
+  const DEFAULT_DURATION = 2000
 
   // 工具函数
-  const validateNumber = (value: number, name: string, defaultValue: number): number => {
+  function validateNumber(value: number, name: string, defaultValue: number): number {
     if (!Number.isFinite(value)) {
       console.warn(`[CountTo] Invalid ${name} value:`, value)
       return defaultValue
@@ -88,16 +77,16 @@
     return value
   }
 
-  const clamp = (value: number, min: number, max: number): number => {
+  function clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(value, max))
   }
 
-  const formatNumber = (
+  function formatNumber(
     value: number,
     decimals: number,
     decimal: string,
     separator: string
-  ): string => {
+  ): string {
     let result = decimals > 0 ? value.toFixed(decimals) : Math.floor(value).toString()
 
     // 处理小数点符号
@@ -168,18 +157,18 @@
   })
 
   // 私有方法
-  const shouldSkipAnimation = (target: number): boolean => {
+  function shouldSkipAnimation(target: number): boolean {
     const current = isPaused.value ? pausedValue.value : transitionValue.value
     return Math.abs(current - target) < EPSILON
   }
 
-  const resetPauseState = (): void => {
+  function resetPauseState(): void {
     isPaused.value = false
     pausedValue.value = 0
   }
 
   // 公共方法
-  const start = (target?: number): void => {
+  function start(target?: number): void {
     if (props.disabled) {
       console.warn('[CountTo] Animation is disabled')
       return
@@ -209,7 +198,7 @@
     })
   }
 
-  const pause = (): void => {
+  function pause(): void {
     if (!isRunning.value || isPaused.value) {
       return
     }
@@ -221,7 +210,7 @@
     emit('paused', pausedValue.value)
   }
 
-  const reset = (newTarget = 0): void => {
+  function reset(newTarget = 0): void {
     const target = validateNumber(newTarget, 'reset target', 0)
 
     currentValue.value = target
@@ -231,7 +220,7 @@
     emit('reset')
   }
 
-  const setTarget = (target: number): void => {
+  function setTarget(target: number): void {
     if (!Number.isFinite(target)) {
       console.warn('[CountTo] Invalid target value for setTarget:', target)
       return
@@ -244,7 +233,7 @@
     }
   }
 
-  const stop = (): void => {
+  function stop(): void {
     if (isRunning.value || isPaused.value) {
       currentValue.value = 0
       resetPauseState()
@@ -308,3 +297,12 @@
     }
   })
 </script>
+
+<template>
+  <span
+    class="text-g-900 tabular-nums"
+    :class="isRunning ? 'transition-opacity duration-300 ease-in-out' : ''"
+  >
+    {{ formattedValue }}
+  </span>
+</template>

@@ -1,41 +1,8 @@
 <!-- 面包屑导航 -->
-<template>
-  <nav class="ml-2.5 max-lg:!hidden" aria-label="breadcrumb">
-    <ul class="flex-c h-full">
-      <li
-        v-for="(item, index) in breadcrumbItems"
-        :key="item.path"
-        class="box-border flex-c h-7 text-sm leading-7"
-      >
-        <div
-          :class="
-            isClickable(item, index)
-              ? 'c-p py-1 rounded tad-200 hover:bg-active-color hover:[&_span]:text-g-600'
-              : ''
-          "
-          @click="handleBreadcrumbClick(item, index)"
-        >
-          <span
-            class="block max-w-46 overflow-hidden text-ellipsis whitespace-nowrap px-1.5 text-sm text-g-600 dark:text-g-800"
-            >{{ formatMenuTitle(item.meta?.title as string) }}</span
-          >
-        </div>
-        <div
-          v-if="!isLastItem(index) && item.meta?.title"
-          class="mx-1 text-sm not-italic text-g-500"
-          aria-hidden="true"
-        >
-          /
-        </div>
-      </li>
-    </ul>
-  </nav>
-</template>
-
 <script setup lang="ts">
-  import { computed } from 'vue'
-  import { useRouter, useRoute } from 'vue-router'
   import type { RouteLocationMatched, RouteRecordRaw } from 'vue-router'
+  import { computed } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
   import { formatMenuTitle } from '@/utils/router'
 
   defineOptions({ name: 'ArtBreadcrumb' })
@@ -83,31 +50,36 @@
   })
 
   // 辅助函数：判断是否为包裹容器路由
-  const isWrapperContainer = (item: BreadcrumbItem): boolean =>
-    item.path === '/outside' && !!item.meta?.isIframe
+  function isWrapperContainer(item: BreadcrumbItem): boolean {
+    return item.path === '/outside' && !!item.meta?.isIframe
+  }
 
   // 辅助函数：创建面包屑项目
-  const createBreadcrumbItem = (route: RouteLocationMatched): BreadcrumbItem => ({
-    path: route.path,
-    meta: route.meta
-  })
+  function createBreadcrumbItem(route: RouteLocationMatched): BreadcrumbItem {
+    return {
+      path: route.path,
+      meta: route.meta
+    }
+  }
 
   // 辅助函数：判断是否为首页
   const isHomeRoute = (route: RouteLocationMatched): boolean => route.name === '/'
 
   // 辅助函数：判断是否为最后一项
-  const isLastItem = (index: number): boolean => {
+  function isLastItem(index: number): boolean {
     const itemsLength = breadcrumbItems.value.length
     return index === itemsLength - 1
   }
 
   // 辅助函数：判断是否可点击
-  const isClickable = (item: BreadcrumbItem, index: number): boolean =>
-    item.path !== '/outside' && !isLastItem(index)
+  function isClickable(item: BreadcrumbItem, index: number): boolean {
+    return item.path !== '/outside' && !isLastItem(index)
+  }
 
   // 辅助函数：查找路由的第一个有效子路由
-  const findFirstValidChild = (route: RouteRecordRaw) =>
-    route.children?.find((child) => !child.redirect && !child.meta?.isHide)
+  function findFirstValidChild(route: RouteRecordRaw) {
+    return route.children?.find((child) => !child.redirect && !child.meta?.isHide)
+  }
 
   // 辅助函数：构建完整路径
   const buildFullPath = (childPath: string): string => `/${childPath}`.replace('//', '/')
@@ -140,3 +112,36 @@
     }
   }
 </script>
+
+<template>
+  <nav class="ml-2.5 max-lg:!hidden" aria-label="breadcrumb">
+    <ul class="flex-c h-full">
+      <li
+        v-for="(item, index) in breadcrumbItems"
+        :key="item.path"
+        class="box-border flex-c h-7 text-sm leading-7"
+      >
+        <div
+          :class="
+            isClickable(item, index)
+              ? 'c-p py-1 rounded tad-200 hover:bg-active-color hover:[&_span]:text-g-600'
+              : ''
+          "
+          @click="handleBreadcrumbClick(item, index)"
+        >
+          <span
+            class="block max-w-46 overflow-hidden text-ellipsis whitespace-nowrap px-1.5 text-sm text-g-600 dark:text-g-800"
+            >{{ formatMenuTitle(item.meta?.title as string) }}</span
+          >
+        </div>
+        <div
+          v-if="!isLastItem(index) && item.meta?.title"
+          class="mx-1 text-sm not-italic text-g-500"
+          aria-hidden="true"
+        >
+          /
+        </div>
+      </li>
+    </ul>
+  </nav>
+</template>

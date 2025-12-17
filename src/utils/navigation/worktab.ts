@@ -1,3 +1,7 @@
+import type { RouteLocationNormalized } from 'vue-router'
+import { useCommon } from '@/hooks/core/useCommon'
+import { IframeRouteManager } from '@/router/core'
+import { useSettingStore } from '@/store/modules/setting'
 /**
  * 工作标签页管理模块
  *
@@ -22,17 +26,13 @@
  * @author Art Design Pro Team
  */
 import { useWorktabStore } from '@/store/modules/worktab'
-import { RouteLocationNormalized } from 'vue-router'
 import { isIframe } from './route'
-import { useSettingStore } from '@/store/modules/setting'
-import { IframeRouteManager } from '@/router/core'
-import { useCommon } from '@/hooks/core/useCommon'
 
 /**
  * 根据当前路由信息设置工作标签页（worktab）
  * @param to 当前路由对象
  */
-export const setWorktab = (to: RouteLocationNormalized): void => {
+export function setWorktab(to: RouteLocationNormalized): void {
   const worktabStore = useWorktabStore()
   const { meta, path, name, params, query } = to
   if (!meta.isHideTab) {

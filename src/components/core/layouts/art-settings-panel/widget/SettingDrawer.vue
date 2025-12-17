@@ -1,23 +1,3 @@
-<template>
-  <div class="setting-drawer">
-    <ElDrawer
-      size="300px"
-      v-model="visible"
-      :lock-scroll="true"
-      :with-header="false"
-      :before-close="handleClose"
-      :destroy-on-close="false"
-      modal-class="setting-modal"
-      @open="handleOpen"
-      @close="handleDrawerClose"
-    >
-      <div class="drawer-con">
-        <slot />
-      </div>
-    </ElDrawer>
-  </div>
-</template>
-
 <script setup lang="ts">
   interface Props {
     modelValue: boolean
@@ -37,15 +17,35 @@
     set: (value: boolean) => emit('update:modelValue', value)
   })
 
-  const handleOpen = () => {
+  function handleOpen() {
     emit('open')
   }
 
-  const handleDrawerClose = () => {
+  function handleDrawerClose() {
     emit('close')
   }
 
-  const handleClose = () => {
+  function handleClose() {
     visible.value = false
   }
 </script>
+
+<template>
+  <div class="setting-drawer">
+    <ElDrawer
+      v-model="visible"
+      size="300px"
+      :lock-scroll="true"
+      :with-header="false"
+      :before-close="handleClose"
+      :destroy-on-close="false"
+      modal-class="setting-modal"
+      @open="handleOpen"
+      @close="handleDrawerClose"
+    >
+      <div class="drawer-con">
+        <slot />
+      </div>
+    </ElDrawer>
+  </div>
+</template>

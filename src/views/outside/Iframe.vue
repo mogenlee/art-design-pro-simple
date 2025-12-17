@@ -1,15 +1,3 @@
-<template>
-  <div class="box-border w-full h-full" v-loading="isLoading">
-    <iframe
-      ref="iframeRef"
-      :src="iframeUrl"
-      frameborder="0"
-      class="w-full h-full min-h-[calc(100vh-120px)] border-none"
-      @load="handleIframeLoad"
-    ></iframe>
-  </div>
-</template>
-
 <script setup lang="ts">
   import { IframeRouteManager } from '@/router/core'
 
@@ -36,7 +24,18 @@
    * 处理 iframe 加载完成事件
    * 隐藏加载状态
    */
-  const handleIframeLoad = (): void => {
+  function handleIframeLoad(): void {
     isLoading.value = false
   }
 </script>
+
+<template>
+  <div v-loading="isLoading" class="box-border w-full h-full">
+    <iframe
+      ref="iframeRef"
+      :src="iframeUrl"
+      class="w-full h-full min-h-[calc(100vh-120px)] border-none"
+      @load="handleIframeLoad"
+    />
+  </div>
+</template>

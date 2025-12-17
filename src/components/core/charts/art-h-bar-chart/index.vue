@@ -1,18 +1,10 @@
 <!-- 水平柱状图 -->
-<template>
-  <div
-    ref="chartRef"
-    class="relative w-full"
-    :style="{ height: props.height }"
-    v-loading="props.loading"
-  ></div>
-</template>
-
 <script setup lang="ts">
-  import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
-  import { getCssVar } from '@/utils/ui'
-  import { graphic, type EChartsOption } from '@/plugins/echarts'
+  import type { EChartsOption } from '@/plugins/echarts'
   import type { BarChartProps, BarDataItem } from '@/types/component/chart'
+  import { useChartComponent, useChartOps } from '@/hooks/core/useChart'
+  import { graphic } from '@/plugins/echarts'
+  import { getCssVar } from '@/utils/ui'
 
   defineOptions({ name: 'ArtHBarChart' })
 
@@ -51,7 +43,7 @@
   })
 
   // 获取颜色配置
-  const getColor = (customColor?: string, index?: number) => {
+  function getColor(customColor?: string, index?: number) {
     if (customColor) return customColor
 
     if (index !== undefined) {
@@ -72,35 +64,37 @@
   }
 
   // 创建渐变色
-  const createGradientColor = (color: string) => {
+  function createGradientColor(color: string) {
     return new graphic.LinearGradient(0, 0, 1, 0, [
       {
         offset: 0,
-        color: color
+        color
       },
       {
         offset: 1,
-        color: color
+        color
       }
     ])
   }
 
   // 获取基础样式配置
-  const getBaseItemStyle = (
+  function getBaseItemStyle(
     color: string | InstanceType<typeof graphic.LinearGradient> | undefined
-  ) => ({
-    borderRadius: 4,
-    color: typeof color === 'string' ? createGradientColor(color) : color
-  })
+  ) {
+    return {
+      borderRadius: 4,
+      color: typeof color === 'string' ? createGradientColor(color) : color
+    }
+  }
 
   // 创建系列配置
-  const createSeriesItem = (config: {
+  function createSeriesItem(config: {
     name?: string
     data: number[]
     color?: string | InstanceType<typeof graphic.LinearGradient>
     barWidth?: string | number
     stack?: string
-  }) => {
+  }) {
     const animationConfig = getAnimationConfig()
 
     return {
@@ -206,3 +200,12 @@
     }
   })
 </script>
+
+<template>
+  <div
+    ref="chartRef"
+    v-loading="props.loading"
+    class="relative w-full"
+    :style="{ height: props.height }"
+  />
+</template>

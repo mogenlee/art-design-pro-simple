@@ -1,53 +1,10 @@
 <!-- 文字滚动 -->
-<template>
-  <div
-    ref="containerRef"
-    class="relative overflow-hidden rounded-custom-sm border flex-c box-border text-sm"
-    :class="themeClasses"
-    :style="containerStyle"
-  >
-    <div class="flex-cc absolute left-0 h-full w-9 z-10" :style="{ backgroundColor: bgColor }">
-      <ArtSvgIcon icon="ri:volume-down-line" class="text-lg" />
-    </div>
-
-    <div
-      ref="contentRef"
-      class="whitespace-nowrap inline-block transition-opacity duration-600 [&_a]:text-danger [&_a:hover]:underline [&_a:hover]:text-danger/80 px-9"
-      :class="[contentClass, { 'opacity-0': !isReady, 'opacity-100': isReady }]"
-      :style="contentStyle"
-      @click="handleContentClick"
-    >
-      <!-- 原始内容 -->
-      <span ref="textRef" class="inline-block">
-        <slot>
-          <span v-html="text"></span>
-        </slot>
-      </span>
-      <!-- 克隆内容用于无缝循环 -->
-      <span v-if="shouldClone" class="inline-block" :style="cloneSpacing">
-        <slot>
-          <span v-html="text"></span>
-        </slot>
-      </span>
-    </div>
-
-    <div
-      v-if="showClose"
-      class="flex-cc absolute right-0 h-full w-9 c-p"
-      :style="{ backgroundColor: bgColor }"
-      @click="handleClose"
-    >
-      <ArtSvgIcon icon="ri:close-fill" class="text-lg" />
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
   import {
+    useDebounceFn,
+    useElementHover,
     useElementSize,
     useRafFn,
-    useElementHover,
-    useDebounceFn,
     useTimeoutFn
   } from '@vueuse/core'
   import { useSettingStore } from '@/store/modules/setting'
@@ -102,7 +59,7 @@
     close: []
   }>()
 
-  const handleClose = () => {
+  function handleClose() {
     emit('close')
   }
 
@@ -188,7 +145,7 @@
     return isHorizontal.value ? { marginLeft: spacing } : { marginTop: spacing }
   })
 
-  const measureSizes = () => {
+  function measureSizes() {
     if (!containerRef.value || !textRef.value) return
 
     const text = textRef.value
@@ -247,7 +204,7 @@
     { immediate: false }
   )
 
-  const handleContentClick = (e: MouseEvent) => {
+  function handleContentClick(e: MouseEvent) {
     const target = e.target as HTMLElement
     if (target.tagName === 'A') {
       e.stopPropagation()
@@ -283,3 +240,46 @@
     pause()
   })
 </script>
+
+<template>
+  <div
+    ref="containerRef"
+    class="relative overflow-hidden rounded-custom-sm border flex-c box-border text-sm"
+    :class="themeClasses"
+    :style="containerStyle"
+  >
+    <div class="flex-cc absolute left-0 h-full w-9 z-10" :style="{ backgroundColor: bgColor }">
+      <ArtSvgIcon icon="ri:volume-down-line" class="text-lg" />
+    </div>
+
+    <div
+      ref="contentRef"
+      class="whitespace-nowrap inline-block transition-opacity duration-600 [&_a]:text-danger [&_a:hover]:underline [&_a:hover]:text-danger/80 px-9"
+      :class="[contentClass, { 'opacity-0': !isReady, 'opacity-100': isReady }]"
+      :style="contentStyle"
+      @click="handleContentClick"
+    >
+      <!-- 原始内容 -->
+      <span ref="textRef" class="inline-block">
+        <slot>
+          <span v-html="text" />
+        </slot>
+      </span>
+      <!-- 克隆内容用于无缝循环 -->
+      <span v-if="shouldClone" class="inline-block" :style="cloneSpacing">
+        <slot>
+          <span v-html="text" />
+        </slot>
+      </span>
+    </div>
+
+    <div
+      v-if="showClose"
+      class="flex-cc absolute right-0 h-full w-9 c-p"
+      :style="{ backgroundColor: bgColor }"
+      @click="handleClose"
+    >
+      <ArtSvgIcon icon="ri:close-fill" class="text-lg" />
+    </div>
+  </div>
+</template>

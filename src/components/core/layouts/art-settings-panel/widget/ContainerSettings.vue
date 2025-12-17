@@ -1,3 +1,16 @@
+<script setup lang="ts">
+  import { storeToRefs } from 'pinia'
+  import { useSettingStore } from '@/store/modules/setting'
+  import { useSettingsConfig } from '../composables/useSettingsConfig'
+  import { useSettingsHandlers } from '../composables/useSettingsHandlers'
+  import SectionTitle from './SectionTitle.vue'
+
+  const settingStore = useSettingStore()
+  const { containerWidth } = storeToRefs(settingStore)
+  const { containerWidthOptions } = useSettingsConfig()
+  const { containerHandlers } = useSettingsHandlers()
+</script>
+
 <template>
   <div>
     <SectionTitle :title="$t('setting.container.title')" class="mt-12.5" />
@@ -18,16 +31,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-  import SectionTitle from './SectionTitle.vue'
-  import { useSettingStore } from '@/store/modules/setting'
-  import { useSettingsConfig } from '../composables/useSettingsConfig'
-  import { useSettingsHandlers } from '../composables/useSettingsHandlers'
-  import { storeToRefs } from 'pinia'
-
-  const settingStore = useSettingStore()
-  const { containerWidth } = storeToRefs(settingStore)
-  const { containerWidthOptions } = useSettingsConfig()
-  const { containerHandlers } = useSettingsHandlers()
-</script>

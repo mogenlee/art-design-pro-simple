@@ -1,78 +1,33 @@
 <!-- 基础横幅组件 -->
-<template>
-  <div
-    class="art-card basic-banner"
-    :class="[{ 'has-decoration': decoration }, boxStyle]"
-    :style="{ height }"
-    @click="emit('click')"
-  >
-    <!-- 流星效果 -->
-    <div v-if="meteorConfig?.enabled && isDark" class="basic-banner__meteors">
-      <span
-        v-for="(meteor, index) in meteors"
-        :key="index"
-        class="meteor"
-        :style="{
-          top: '-60px',
-          left: `${meteor.x}%`,
-          animationDuration: `${meteor.speed}s`,
-          animationDelay: `${meteor.delay}s`
-        }"
-      ></span>
-    </div>
-
-    <div class="basic-banner__content">
-      <!-- title slot -->
-      <slot name="title">
-        <p v-if="title" class="basic-banner__title" :style="{ color: titleColor }">{{ title }}</p>
-      </slot>
-
-      <!-- subtitle slot -->
-      <slot name="subtitle">
-        <p v-if="subtitle" class="basic-banner__subtitle" :style="{ color: subtitleColor }">{{
-          subtitle
-        }}</p>
-      </slot>
-
-      <!-- button slot -->
-      <slot name="button">
-        <div
-          v-if="buttonConfig?.show"
-          class="basic-banner__button"
-          :style="{
-            backgroundColor: buttonColor,
-            color: buttonTextColor,
-            borderRadius: buttonRadius
-          }"
-          @click.stop="emit('buttonClick')"
-        >
-          {{ buttonConfig?.text }}
-        </div>
-      </slot>
-
-      <!-- default slot -->
-      <slot></slot>
-
-      <!-- background image -->
-      <img
-        v-if="imageConfig.src"
-        class="basic-banner__background-image"
-        :src="imageConfig.src"
-        :style="{ width: imageConfig.width, bottom: imageConfig.bottom, right: imageConfig.right }"
-        loading="lazy"
-        alt="背景图片"
-      />
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-  import { onMounted, ref, computed } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { useSettingStore } from '@/store/modules/setting'
-  const settingStore = useSettingStore()
-  const { isDark } = storeToRefs(settingStore)
 
   defineOptions({ name: 'ArtBasicBanner' })
+  // 组件属性默认值设置
+  const props = withDefaults(defineProps<Props>(), {
+    height: '11rem',
+    titleColor: 'white',
+    subtitleColor: 'white',
+    boxStyle: '!bg-theme/60',
+    decoration: true,
+    buttonConfig: () => ({
+      show: true,
+      text: '查看',
+      color: '#fff',
+      textColor: '#333',
+      radius: '6px'
+    }),
+    meteorConfig: () => ({ enabled: false, count: 10 }),
+    imageConfig: () => ({ src: '', width: '12rem', bottom: '-3rem', right: '0' })
+  })
+  // 定义组件事件
+  const emit = defineEmits<{
+    (e: 'click'): void // 整体点击事件
+    (e: 'buttonClick'): void // 按钮点击事件
+  }>()
+  const settingStore = useSettingStore()
+  const { isDark } = storeToRefs(settingStore)
 
   // 流星对象接口定义
   interface Meteor {
@@ -142,30 +97,6 @@
     subtitleColor?: string
   }
 
-  // 组件属性默认值设置
-  const props = withDefaults(defineProps<Props>(), {
-    height: '11rem',
-    titleColor: 'white',
-    subtitleColor: 'white',
-    boxStyle: '!bg-theme/60',
-    decoration: true,
-    buttonConfig: () => ({
-      show: true,
-      text: '查看',
-      color: '#fff',
-      textColor: '#333',
-      radius: '6px'
-    }),
-    meteorConfig: () => ({ enabled: false, count: 10 }),
-    imageConfig: () => ({ src: '', width: '12rem', bottom: '-3rem', right: '0' })
-  })
-
-  // 定义组件事件
-  const emit = defineEmits<{
-    (e: 'click'): void // 整体点击事件
-    (e: 'buttonClick'): void // 按钮点击事件
-  }>()
-
   // 计算按钮样式属性
   const buttonColor = computed(() => props.buttonConfig?.color ?? '#fff')
   const buttonTextColor = computed(() => props.buttonConfig?.textColor ?? '#333')
@@ -202,6 +133,75 @@
     })
   }
 </script>
+
+<template>
+  <div
+    class="art-card basic-banner"
+    :class="[{ 'has-decoration': decoration }, boxStyle]"
+    :style="{ height }"
+    @click="emit('click')"
+  >
+    <!-- 流星效果 -->
+    <div v-if="meteorConfig?.enabled && isDark" class="basic-banner__meteors">
+      <span
+        v-for="(meteor, index) in meteors"
+        :key="index"
+        class="meteor"
+        :style="{
+          top: '-60px',
+          left: `${meteor.x}%`,
+          animationDuration: `${meteor.speed}s`,
+          animationDelay: `${meteor.delay}s`
+        }"
+      />
+    </div>
+
+    <div class="basic-banner__content">
+      <!-- title slot -->
+      <slot name="title">
+        <p v-if="title" class="basic-banner__title" :style="{ color: titleColor }">
+          {{ title }}
+        </p>
+      </slot>
+
+      <!-- subtitle slot -->
+      <slot name="subtitle">
+        <p v-if="subtitle" class="basic-banner__subtitle" :style="{ color: subtitleColor }">
+          {{ subtitle }}
+        </p>
+      </slot>
+
+      <!-- button slot -->
+      <slot name="button">
+        <div
+          v-if="buttonConfig?.show"
+          class="basic-banner__button"
+          :style="{
+            backgroundColor: buttonColor,
+            color: buttonTextColor,
+            borderRadius: buttonRadius
+          }"
+          @click.stop="emit('buttonClick')"
+        >
+          {{ buttonConfig?.text }}
+        </div>
+      </slot>
+
+      <!-- default slot -->
+      <slot />
+
+      <!-- background image -->
+      <img
+        v-if="imageConfig.src"
+        class="basic-banner__background-image"
+        :src="imageConfig.src"
+        :style="{ width: imageConfig.width, bottom: imageConfig.bottom, right: imageConfig.right }"
+        loading="lazy"
+        alt="背景图片"
+      />
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
   .basic-banner {

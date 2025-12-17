@@ -8,8 +8,8 @@
  */
 
 import type { RouteRecordRaw } from 'vue-router'
+import type { ComponentLoader } from './ComponentLoader'
 import type { AppRouteRecord } from '@/types/router'
-import { ComponentLoader } from './ComponentLoader'
 import { IframeRouteManager } from './IframeRouteManager'
 
 interface ConvertedRoute extends Omit<RouteRecordRaw, 'children'> {

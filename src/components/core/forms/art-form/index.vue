@@ -1,112 +1,19 @@
 <!-- 表单组件 -->
 <!-- 支持常用表单组件、自定义组件、插槽、校验、隐藏表单项 -->
 <!-- 写法同 ElementPlus 官方文档组件，把属性写在 props 里面就可以了 -->
-<template>
-  <section class="px-4 pb-0 pt-4 md:px-4 md:pt-4">
-    <ElForm
-      ref="formRef"
-      :model="modelValue"
-      :label-position="labelPosition"
-      v-bind="{ ...$attrs }"
-    >
-      <ElRow class="flex flex-wrap" :gutter="gutter">
-        <ElCol
-          v-for="item in visibleFormItems"
-          :key="item.key"
-          :xs="getColSpan(item.span, 'xs')"
-          :sm="getColSpan(item.span, 'sm')"
-          :md="getColSpan(item.span, 'md')"
-          :lg="getColSpan(item.span, 'lg')"
-          :xl="getColSpan(item.span, 'xl')"
-        >
-          <ElFormItem
-            :prop="item.key"
-            :label-width="item.label ? item.labelWidth || labelWidth : undefined"
-          >
-            <template #label v-if="item.label">
-              <component v-if="typeof item.label !== 'string'" :is="item.label" />
-              <span v-else>{{ item.label }}</span>
-            </template>
-            <slot :name="item.key" :item="item" :modelValue="modelValue">
-              <component
-                :is="getComponent(item)"
-                v-model="modelValue[item.key]"
-                v-bind="getProps(item)"
-              >
-                <!-- 下拉选择 -->
-                <template v-if="item.type === 'select' && getProps(item)?.options">
-                  <ElOption
-                    v-for="option in getProps(item).options"
-                    v-bind="option"
-                    :key="option.value"
-                  />
-                </template>
-
-                <!-- 复选框组 -->
-                <template v-if="item.type === 'checkboxgroup' && getProps(item)?.options">
-                  <ElCheckbox
-                    v-for="option in getProps(item).options"
-                    v-bind="option"
-                    :key="option.value"
-                  />
-                </template>
-
-                <!-- 单选框组 -->
-                <template v-if="item.type === 'radiogroup' && getProps(item)?.options">
-                  <ElRadio
-                    v-for="option in getProps(item).options"
-                    v-bind="option"
-                    :key="option.value"
-                  />
-                </template>
-
-                <!-- 动态插槽支持 -->
-                <template v-for="(slotFn, slotName) in getSlots(item)" :key="slotName" #[slotName]>
-                  <component :is="slotFn" />
-                </template>
-              </component>
-            </slot>
-          </ElFormItem>
-        </ElCol>
-        <ElCol :xs="24" :sm="24" :md="span" :lg="span" :xl="span" class="max-w-full flex-1">
-          <div
-            class="mb-3 flex-c flex-wrap justify-end md:flex-row md:items-stretch md:gap-2"
-            :style="actionButtonsStyle"
-          >
-            <div class="flex gap-2 md:justify-center">
-              <ElButton v-if="showReset" class="reset-button" @click="handleReset" v-ripple>
-                {{ t('table.form.reset') }}
-              </ElButton>
-              <ElButton
-                v-if="showSubmit"
-                type="primary"
-                class="submit-button"
-                @click="handleSubmit"
-                v-ripple
-                :disabled="disabledSubmit"
-              >
-                {{ t('table.form.submit') }}
-              </ElButton>
-            </div>
-          </div>
-        </ElCol>
-      </ElRow>
-    </ElForm>
-  </section>
-</template>
-
 <script setup lang="ts">
-  import { useWindowSize } from '@vueuse/core'
-  import { useI18n } from 'vue-i18n'
+  import type { FormInstance } from 'element-plus'
   import type { Component } from 'vue'
+  import type { ResponsiveBreakpoint } from '@/utils/form/responsive'
+  import { useWindowSize } from '@vueuse/core'
   import {
     ElCascader,
     ElCheckbox,
     ElCheckboxGroup,
     ElDatePicker,
     ElInput,
-    ElInputTag,
     ElInputNumber,
+    ElInputTag,
     ElRadioGroup,
     ElRate,
     ElSelect,
@@ -114,12 +21,26 @@
     ElSwitch,
     ElTimePicker,
     ElTimeSelect,
-    ElTreeSelect,
-    type FormInstance
+    ElTreeSelect
   } from 'element-plus'
-  import { calculateResponsiveSpan, type ResponsiveBreakpoint } from '@/utils/form/responsive'
+  import { useI18n } from 'vue-i18n'
+  import { calculateResponsiveSpan } from '@/utils/form/responsive'
 
   defineOptions({ name: 'ArtForm' })
+
+  const props = withDefaults(defineProps<FormProps>(), {
+    items: () => [],
+    span: 6,
+    gutter: 12,
+    labelPosition: 'right',
+    labelWidth: '70px',
+    buttonLeftLimit: 2,
+    showReset: true,
+    showSubmit: true,
+    disabledSubmit: false
+  })
+
+  const emit = defineEmits<FormEmits>()
 
   const componentMap = {
     input: ElInput, // 输入框
@@ -197,30 +118,16 @@
     disabledSubmit?: boolean
   }
 
-  const props = withDefaults(defineProps<FormProps>(), {
-    items: () => [],
-    span: 6,
-    gutter: 12,
-    labelPosition: 'right',
-    labelWidth: '70px',
-    buttonLeftLimit: 2,
-    showReset: true,
-    showSubmit: true,
-    disabledSubmit: false
-  })
-
   interface FormEmits {
     reset: []
     submit: []
   }
 
-  const emit = defineEmits<FormEmits>()
-
   const modelValue = defineModel<Record<string, any>>({ default: {} })
 
   const rootProps = ['label', 'labelWidth', 'key', 'type', 'hidden', 'span', 'slots']
 
-  const getProps = (item: FormItem) => {
+  function getProps(item: FormItem) {
     if (item.props) return item.props
     const props = { ...item }
     rootProps.forEach((key) => delete (props as Record<string, any>)[key])
@@ -228,7 +135,7 @@
   }
 
   // 获取插槽
-  const getSlots = (item: FormItem) => {
+  function getSlots(item: FormItem) {
     if (!item.slots) return {}
     const validSlots: Record<string, () => any> = {}
     Object.entries(item.slots).forEach(([key, slotFn]) => {
@@ -240,21 +147,21 @@
   }
 
   // 组件
-  const getComponent = (item: FormItem) => {
+  function getComponent(item: FormItem) {
     // 优先使用 render 函数或组件渲染自定义组件
     if (item.render) {
       return item.render
     }
     // 使用 type 获取预定义组件
     const { type } = item
-    return componentMap[type as keyof typeof componentMap] || componentMap['input']
+    return componentMap[type as keyof typeof componentMap] || componentMap.input
   }
 
   /**
    * 获取列宽 span 值
    * 根据屏幕尺寸智能降级，避免小屏幕上表单项被压缩过小
    */
-  const getColSpan = (itemSpan: number | undefined, breakpoint: ResponsiveBreakpoint): number => {
+  function getColSpan(itemSpan: number | undefined, breakpoint: ResponsiveBreakpoint): number {
     return calculateResponsiveSpan(itemSpan, span.value, breakpoint)
   }
 
@@ -279,7 +186,7 @@
   /**
    * 处理重置事件
    */
-  const handleReset = () => {
+  function handleReset() {
     // 重置表单字段（UI 层）
     formInstance.value?.resetFields()
 
@@ -296,7 +203,7 @@
   /**
    * 处理提交事件
    */
-  const handleSubmit = () => {
+  function handleSubmit() {
     emit('submit')
   }
 
@@ -309,3 +216,97 @@
   // 解构 props 以便在模板中直接使用
   const { span, gutter, labelPosition, labelWidth } = toRefs(props)
 </script>
+
+<template>
+  <section class="px-4 pb-0 pt-4 md:px-4 md:pt-4">
+    <ElForm
+      ref="formRef"
+      :model="modelValue"
+      :label-position="labelPosition"
+      v-bind="{ ...$attrs }"
+    >
+      <ElRow class="flex flex-wrap" :gutter="gutter">
+        <ElCol
+          v-for="item in visibleFormItems"
+          :key="item.key"
+          :xs="getColSpan(item.span, 'xs')"
+          :sm="getColSpan(item.span, 'sm')"
+          :md="getColSpan(item.span, 'md')"
+          :lg="getColSpan(item.span, 'lg')"
+          :xl="getColSpan(item.span, 'xl')"
+        >
+          <ElFormItem
+            :prop="item.key"
+            :label-width="item.label ? item.labelWidth || labelWidth : undefined"
+          >
+            <template v-if="item.label" #label>
+              <component :is="item.label" v-if="typeof item.label !== 'string'" />
+              <span v-else>{{ item.label }}</span>
+            </template>
+            <slot :name="item.key" :item="item" :model-value="modelValue">
+              <component
+                :is="getComponent(item)"
+                v-model="modelValue[item.key]"
+                v-bind="getProps(item)"
+              >
+                <!-- 下拉选择 -->
+                <template v-if="item.type === 'select' && getProps(item)?.options">
+                  <ElOption
+                    v-for="option in getProps(item).options"
+                    v-bind="option"
+                    :key="option.value"
+                  />
+                </template>
+
+                <!-- 复选框组 -->
+                <template v-if="item.type === 'checkboxgroup' && getProps(item)?.options">
+                  <ElCheckbox
+                    v-for="option in getProps(item).options"
+                    v-bind="option"
+                    :key="option.value"
+                  />
+                </template>
+
+                <!-- 单选框组 -->
+                <template v-if="item.type === 'radiogroup' && getProps(item)?.options">
+                  <ElRadio
+                    v-for="option in getProps(item).options"
+                    v-bind="option"
+                    :key="option.value"
+                  />
+                </template>
+
+                <!-- 动态插槽支持 -->
+                <template v-for="(slotFn, slotName) in getSlots(item)" :key="slotName" #[slotName]>
+                  <component :is="slotFn" />
+                </template>
+              </component>
+            </slot>
+          </ElFormItem>
+        </ElCol>
+        <ElCol :xs="24" :sm="24" :md="span" :lg="span" :xl="span" class="max-w-full flex-1">
+          <div
+            class="mb-3 flex-c flex-wrap justify-end md:flex-row md:items-stretch md:gap-2"
+            :style="actionButtonsStyle"
+          >
+            <div class="flex gap-2 md:justify-center">
+              <ElButton v-if="showReset" v-ripple class="reset-button" @click="handleReset">
+                {{ t('table.form.reset') }}
+              </ElButton>
+              <ElButton
+                v-if="showSubmit"
+                v-ripple
+                type="primary"
+                class="submit-button"
+                :disabled="disabledSubmit"
+                @click="handleSubmit"
+              >
+                {{ t('table.form.submit') }}
+              </ElButton>
+            </div>
+          </div>
+        </ElCol>
+      </ElRow>
+    </ElForm>
+  </section>
+</template>

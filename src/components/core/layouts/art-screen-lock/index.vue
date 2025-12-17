@@ -1,116 +1,9 @@
 <!-- 锁屏 -->
-<template>
-  <div class="layout-lock-screen">
-    <!-- 开发者工具警告覆盖层 -->
-    <div
-      v-if="showDevToolsWarning"
-      class="fixed top-0 left-0 z-[999999] flex-cc w-full h-full text-white bg-gradient-to-br from-[#1e1e1e] to-black animate-fade-in"
-    >
-      <div class="p-5 text-center select-none">
-        <div class="mb-7.5 text-5xl">🔒</div>
-        <h1 class="m-0 mb-5 text-3xl font-semibold text-danger">系统已锁定</h1>
-        <p class="max-w-125 m-0 text-lg leading-relaxed text-white">
-          检测到开发者工具已打开<br />
-          为了系统安全，请关闭开发者工具后继续使用
-        </p>
-        <div class="mt-7.5 text-sm text-gray-400">Security Lock Activated</div>
-      </div>
-    </div>
-
-    <!-- 锁屏弹窗 -->
-    <div v-if="!isLock">
-      <ElDialog v-model="visible" :width="370" :show-close="false" @open="handleDialogOpen">
-        <div class="flex-c flex-col">
-          <img class="w-16 h-16 rounded-full" src="@imgs/user/avatar.webp" alt="用户头像" />
-          <div class="mt-7.5 mb-3.5 text-base font-medium">{{ userInfo.userName }}</div>
-          <ElForm
-            ref="formRef"
-            :model="formData"
-            :rules="rules"
-            class="w-[90%]"
-            @submit.prevent="handleLock"
-          >
-            <ElFormItem prop="password">
-              <ElInput
-                v-model="formData.password"
-                type="password"
-                :placeholder="$t('lockScreen.lock.inputPlaceholder')"
-                :show-password="true"
-                autocomplete="new-password"
-                ref="lockInputRef"
-                class="w-full mt-9"
-                @keyup.enter="handleLock"
-              >
-                <template #suffix>
-                  <ElIcon class="c-p" @click="handleLock">
-                    <Lock />
-                  </ElIcon>
-                </template>
-              </ElInput>
-            </ElFormItem>
-            <ElButton type="primary" class="w-full mt-0.5" @click="handleLock" v-ripple>
-              {{ $t('lockScreen.lock.btnText') }}
-            </ElButton>
-          </ElForm>
-        </div>
-      </ElDialog>
-    </div>
-
-    <!-- 解锁界面 -->
-    <div v-else class="unlock-content">
-      <div class="flex-c flex-col w-80">
-        <img class="w-16 h-16 mt-5 rounded-full" src="@imgs/user/avatar.webp" alt="用户头像" />
-        <div class="mt-3 mb-3.5 text-base font-medium">
-          {{ userInfo.userName }}
-        </div>
-        <ElForm
-          ref="unlockFormRef"
-          :model="unlockForm"
-          :rules="rules"
-          class="w-full !px-2.5"
-          @submit.prevent="handleUnlock"
-        >
-          <ElFormItem prop="password">
-            <ElInput
-              v-model="unlockForm.password"
-              type="password"
-              :placeholder="$t('lockScreen.unlock.inputPlaceholder')"
-              :show-password="true"
-              autocomplete="new-password"
-              ref="unlockInputRef"
-              class="mt-5"
-            >
-              <template #suffix>
-                <ElIcon class="c-p" @click="handleUnlock">
-                  <Unlock />
-                </ElIcon>
-              </template>
-            </ElInput>
-          </ElFormItem>
-
-          <ElButton type="primary" class="w-full mt-2" @click="handleUnlock" v-ripple>
-            {{ $t('lockScreen.unlock.btnText') }}
-          </ElButton>
-          <div class="w-full text-center">
-            <ElButton
-              text
-              class="mt-2.5 !text-g-600 hover:!text-theme hover:!bg-transparent"
-              @click="toLogin"
-            >
-              {{ $t('lockScreen.unlock.backBtnText') }}
-            </ElButton>
-          </div>
-        </ElForm>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-  import { Lock, Unlock } from '@element-plus/icons-vue'
   import type { FormInstance, FormRules } from 'element-plus'
-  import { useI18n } from 'vue-i18n'
+  import { Lock, Unlock } from '@element-plus/icons-vue'
   import CryptoJS from 'crypto-js'
+  import { useI18n } from 'vue-i18n'
   import { useUserStore } from '@/store/modules/user'
   import { mittBus } from '@/utils/sys'
 
@@ -154,14 +47,14 @@
   }))
 
   // 检测是否为移动设备
-  const isMobile = () => {
+  function isMobile() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     )
   }
 
   // 添加禁用控制台的函数
-  const disableDevTools = () => {
+  function disableDevTools() {
     // 禁用右键菜单
     const handleContextMenu = (e: Event) => {
       if (isLock.value) {
@@ -284,7 +177,7 @@
     document.addEventListener('dragstart', handleDragStart, true)
 
     // 监听开发者工具打开状态（仅在桌面端启用）
-    let devtools = { open: false }
+    const devtools = { open: false }
     const threshold = 160
     let devToolsInterval: ReturnType<typeof setInterval> | null = null
 
@@ -322,7 +215,7 @@
   }
 
   // 工具函数
-  const verifyPassword = (inputPassword: string, storedPassword: string): boolean => {
+  function verifyPassword(inputPassword: string, storedPassword: string): boolean {
     try {
       const decryptedPassword = CryptoJS.AES.decrypt(storedPassword, ENCRYPT_KEY).toString(
         CryptoJS.enc.Utf8
@@ -335,20 +228,20 @@
   }
 
   // 事件处理函数
-  const handleKeydown = (event: KeyboardEvent) => {
+  function handleKeydown(event: KeyboardEvent) {
     if (event.altKey && event.key.toLowerCase() === '¬') {
       event.preventDefault()
       visible.value = true
     }
   }
 
-  const handleDialogOpen = () => {
+  function handleDialogOpen() {
     setTimeout(() => {
       lockInputRef.value?.input?.focus()
     }, 100)
   }
 
-  const handleLock = async () => {
+  async function handleLock() {
     if (!formRef.value) return
 
     await formRef.value.validate((valid, fields) => {
@@ -364,7 +257,7 @@
     })
   }
 
-  const handleUnlock = async () => {
+  async function handleUnlock() {
     if (!unlockFormRef.value) return
 
     await unlockFormRef.value.validate((valid, fields) => {
@@ -399,11 +292,11 @@
     })
   }
 
-  const toLogin = () => {
+  function toLogin() {
     userStore.logOut()
   }
 
-  const openLockScreen = () => {
+  function openLockScreen() {
     visible.value = true
   }
 
@@ -449,6 +342,115 @@
     }
   })
 </script>
+
+<template>
+  <div class="layout-lock-screen">
+    <!-- 开发者工具警告覆盖层 -->
+    <div
+      v-if="showDevToolsWarning"
+      class="fixed top-0 left-0 z-[999999] flex-cc w-full h-full text-white bg-gradient-to-br from-[#1e1e1e] to-black animate-fade-in"
+    >
+      <div class="p-5 text-center select-none">
+        <div class="mb-7.5 text-5xl"> 🔒 </div>
+        <h1 class="m-0 mb-5 text-3xl font-semibold text-danger"> 系统已锁定 </h1>
+        <p class="max-w-125 m-0 text-lg leading-relaxed text-white">
+          检测到开发者工具已打开<br />
+          为了系统安全，请关闭开发者工具后继续使用
+        </p>
+        <div class="mt-7.5 text-sm text-gray-400"> Security Lock Activated </div>
+      </div>
+    </div>
+
+    <!-- 锁屏弹窗 -->
+    <div v-if="!isLock">
+      <ElDialog v-model="visible" :width="370" :show-close="false" @open="handleDialogOpen">
+        <div class="flex-c flex-col">
+          <img class="w-16 h-16 rounded-full" src="@imgs/user/avatar.webp" alt="用户头像" />
+          <div class="mt-7.5 mb-3.5 text-base font-medium">
+            {{ userInfo.userName }}
+          </div>
+          <ElForm
+            ref="formRef"
+            :model="formData"
+            :rules="rules"
+            class="w-[90%]"
+            @submit.prevent="handleLock"
+          >
+            <ElFormItem prop="password">
+              <ElInput
+                ref="lockInputRef"
+                v-model="formData.password"
+                type="password"
+                :placeholder="$t('lockScreen.lock.inputPlaceholder')"
+                :show-password="true"
+                autocomplete="new-password"
+                class="w-full mt-9"
+                @keyup.enter="handleLock"
+              >
+                <template #suffix>
+                  <ElIcon class="c-p" @click="handleLock">
+                    <Lock />
+                  </ElIcon>
+                </template>
+              </ElInput>
+            </ElFormItem>
+            <ElButton v-ripple type="primary" class="w-full mt-0.5" @click="handleLock">
+              {{ $t('lockScreen.lock.btnText') }}
+            </ElButton>
+          </ElForm>
+        </div>
+      </ElDialog>
+    </div>
+
+    <!-- 解锁界面 -->
+    <div v-else class="unlock-content">
+      <div class="flex-c flex-col w-80">
+        <img class="w-16 h-16 mt-5 rounded-full" src="@imgs/user/avatar.webp" alt="用户头像" />
+        <div class="mt-3 mb-3.5 text-base font-medium">
+          {{ userInfo.userName }}
+        </div>
+        <ElForm
+          ref="unlockFormRef"
+          :model="unlockForm"
+          :rules="rules"
+          class="w-full !px-2.5"
+          @submit.prevent="handleUnlock"
+        >
+          <ElFormItem prop="password">
+            <ElInput
+              ref="unlockInputRef"
+              v-model="unlockForm.password"
+              type="password"
+              :placeholder="$t('lockScreen.unlock.inputPlaceholder')"
+              :show-password="true"
+              autocomplete="new-password"
+              class="mt-5"
+            >
+              <template #suffix>
+                <ElIcon class="c-p" @click="handleUnlock">
+                  <Unlock />
+                </ElIcon>
+              </template>
+            </ElInput>
+          </ElFormItem>
+
+          <ElButton v-ripple type="primary" class="w-full mt-2" @click="handleUnlock">
+            {{ $t('lockScreen.unlock.btnText') }}
+          </ElButton>
+          <div class="w-full text-center">
+            <ElButton
+              text
+              class="mt-2.5 !text-g-600 hover:!text-theme hover:!bg-transparent"
+              @click="toLogin"
+            >
+              {{ $t('lockScreen.unlock.backBtnText') }}
+            </ElButton>
+          </div>
+        </ElForm>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
   .layout-lock-screen :deep(.el-dialog) {

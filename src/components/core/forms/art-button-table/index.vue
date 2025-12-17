@@ -1,19 +1,12 @@
 <!-- 表格按钮 -->
-<template>
-  <div
-    :class="[
-      'inline-flex items-center justify-center min-w-8 h-8 px-2.5 mr-2.5 text-sm c-p rounded-md align-middle',
-      buttonClass
-    ]"
-    :style="{ backgroundColor: buttonBgColor, color: iconColor }"
-    @click="handleClick"
-  >
-    <ArtSvgIcon :icon="iconContent" />
-  </div>
-</template>
-
 <script setup lang="ts">
   defineOptions({ name: 'ArtButtonTable' })
+
+  const props = withDefaults(defineProps<Props>(), {})
+
+  const emit = defineEmits<{
+    (e: 'click'): void
+  }>()
 
   interface Props {
     /** 按钮类型 */
@@ -27,12 +20,6 @@
     /** 按钮背景色 */
     buttonBgColor?: string
   }
-
-  const props = withDefaults(defineProps<Props>(), {})
-
-  const emit = defineEmits<{
-    (e: 'click'): void
-  }>()
 
   // 默认按钮配置
   const defaultButtons = {
@@ -53,7 +40,18 @@
     return props.iconClass || (props.type ? defaultButtons[props.type]?.class : '') || ''
   })
 
-  const handleClick = () => {
+  function handleClick() {
     emit('click')
   }
 </script>
+
+<template>
+  <div
+    class="inline-flex items-center justify-center min-w-8 h-8 px-2.5 mr-2.5 text-sm c-p rounded-md align-middle"
+    :class="[buttonClass]"
+    :style="{ backgroundColor: buttonBgColor, color: iconColor }"
+    @click="handleClick"
+  >
+    <ArtSvgIcon :icon="iconContent" />
+  </div>
+</template>

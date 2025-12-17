@@ -1,31 +1,20 @@
 <!-- WangEditor 富文本编辑器 插件地址：https://www.wangeditor.com/ -->
-<template>
-  <div class="editor-wrapper">
-    <Toolbar
-      class="editor-toolbar"
-      :editor="editorRef"
-      :mode="mode"
-      :defaultConfig="toolbarConfig"
-    />
-    <Editor
-      :style="{ height: height, overflowY: 'hidden' }"
-      v-model="modelValue"
-      :mode="mode"
-      :defaultConfig="editorConfig"
-      @onCreated="onCreateEditor"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
-  import '@wangeditor/editor/dist/css/style.css'
-  import { onBeforeUnmount, onMounted, shallowRef, computed } from 'vue'
+  import type { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
   import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+  import { computed, onBeforeUnmount, onMounted, shallowRef } from 'vue'
   import { useUserStore } from '@/store/modules/user'
   import EmojiText from '@/utils/ui/emojo'
-  import { IDomEditor, IToolbarConfig, IEditorConfig } from '@wangeditor/editor'
+  import '@wangeditor/editor/dist/css/style.css'
 
   defineOptions({ name: 'ArtWangEditor' })
+
+  const props = withDefaults(defineProps<Props>(), {
+    height: '500px',
+    mode: 'default',
+    placeholder: '请输入内容...',
+    excludeKeys: () => ['fontFamily']
+  })
 
   // Props 定义
   interface Props {
@@ -48,13 +37,6 @@
       server?: string
     }
   }
-
-  const props = withDefaults(defineProps<Props>(), {
-    height: '500px',
-    mode: 'default',
-    placeholder: '请输入内容...',
-    excludeKeys: () => ['fontFamily']
-  })
 
   const modelValue = defineModel<string>({ required: true })
 
@@ -129,7 +111,7 @@
   }
 
   // 编辑器创建回调
-  const onCreateEditor = (editor: IDomEditor) => {
+  function onCreateEditor(editor: IDomEditor) {
     editorRef.value = editor
 
     // 监听全屏事件
@@ -142,7 +124,7 @@
   }
 
   // 应用自定义图标（带重试机制）
-  const applyCustomIcons = () => {
+  function applyCustomIcons() {
     let retryCount = 0
     const maxRetries = 10
     const retryDelay = 100
@@ -213,6 +195,24 @@
     }
   })
 </script>
+
+<template>
+  <div class="editor-wrapper">
+    <Toolbar
+      class="editor-toolbar"
+      :editor="editorRef"
+      :mode="mode"
+      :default-config="toolbarConfig"
+    />
+    <Editor
+      v-model="modelValue"
+      :style="{ height, overflowY: 'hidden' }"
+      :mode="mode"
+      :default-config="editorConfig"
+      @on-created="onCreateEditor"
+    />
+  </div>
+</template>
 
 <style lang="scss">
   @use './style';

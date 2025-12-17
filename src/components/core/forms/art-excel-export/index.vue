@@ -1,32 +1,38 @@
 <!-- 导出 Excel 文件 -->
-<template>
-  <ElButton
-    :type="type"
-    :size="size"
-    :loading="isExporting"
-    :disabled="disabled || !hasData"
-    v-ripple
-    @click="handleExport"
-  >
-    <template #loading>
-      <ElIcon class="is-loading">
-        <Loading />
-      </ElIcon>
-      {{ loadingText }}
-    </template>
-    <slot>{{ buttonText }}</slot>
-  </ElButton>
-</template>
-
 <script setup lang="ts">
-  import * as XLSX from 'xlsx'
-  import FileSaver from 'file-saver'
-  import { ref, computed, nextTick } from 'vue'
-  import { Loading } from '@element-plus/icons-vue'
   import type { ButtonType } from 'element-plus'
+  import { Loading } from '@element-plus/icons-vue'
   import { useThrottleFn } from '@vueuse/core'
+  import FileSaver from 'file-saver'
+  import { computed, nextTick, ref } from 'vue'
+  import * as XLSX from 'xlsx'
 
   defineOptions({ name: 'ArtExcelExport' })
+
+  const props = withDefaults(defineProps<ExportOptions>(), {
+    filename: () => `export_${new Date().toISOString().slice(0, 10)}`,
+    sheetName: 'Sheet1',
+    type: 'primary',
+    size: 'default',
+    disabled: false,
+    buttonText: '导出 Excel',
+    loadingText: '导出中...',
+    autoIndex: false,
+    indexColumnTitle: '序号',
+    columns: () => ({}),
+    headers: () => ({}),
+    maxRows: 100000,
+    showSuccessMessage: true,
+    showErrorMessage: true,
+    workbookOptions: () => ({})
+  })
+
+  const emit = defineEmits<{
+    beforeExport: [data: ExportData[]]
+    exportSuccess: [filename: string, rowCount: number]
+    exportError: [error: ExportError]
+    exportProgress: [progress: number]
+  }>()
 
   /** 导出数据类型 */
   type ExportValue = string | number | boolean | null | undefined | Date
@@ -90,31 +96,6 @@
     }
   }
 
-  const props = withDefaults(defineProps<ExportOptions>(), {
-    filename: () => `export_${new Date().toISOString().slice(0, 10)}`,
-    sheetName: 'Sheet1',
-    type: 'primary',
-    size: 'default',
-    disabled: false,
-    buttonText: '导出 Excel',
-    loadingText: '导出中...',
-    autoIndex: false,
-    indexColumnTitle: '序号',
-    columns: () => ({}),
-    headers: () => ({}),
-    maxRows: 100000,
-    showSuccessMessage: true,
-    showErrorMessage: true,
-    workbookOptions: () => ({})
-  })
-
-  const emit = defineEmits<{
-    'before-export': [data: ExportData[]]
-    'export-success': [filename: string, rowCount: number]
-    'export-error': [error: ExportError]
-    'export-progress': [progress: number]
-  }>()
-
   /** 导出错误类型 */
   class ExportError extends Error {
     constructor(
@@ -133,7 +114,7 @@
   const hasData = computed(() => Array.isArray(props.data) && props.data.length > 0)
 
   /** 验证导出数据 */
-  const validateData = (data: ExportData[]): void => {
+  function validateData(data: ExportData[]): void {
     if (!Array.isArray(data)) {
       throw new ExportError('数据必须是数组格式', 'INVALID_DATA_TYPE')
     }
@@ -151,12 +132,12 @@
   }
 
   /** 格式化单元格值 */
-  const formatCellValue = (
+  function formatCellValue(
     value: ExportValue,
     key: string,
     row: ExportData,
     index: number
-  ): string => {
+  ): string {
     // 使用列配置的格式化函数
     const column = props.columns[key]
     if (column?.formatter) {
@@ -180,7 +161,7 @@
   }
 
   /** 处理数据 */
-  const processData = (data: ExportData[]): Record<string, string>[] => {
+  function processData(data: ExportData[]): Record<string, string>[] {
     const processedData = data.map((item, index) => {
       const processedItem: Record<string, string> = {}
 
@@ -210,7 +191,7 @@
   }
 
   /** 计算列宽度 */
-  const calculateColumnWidths = (data: Record<string, string>[]): XLSX.ColInfo[] => {
+  function calculateColumnWidths(data: Record<string, string>[]): XLSX.ColInfo[] {
     if (data.length === 0) return []
 
     const sampleSize = Math.min(data.length, 100) // 只取前100行计算列宽
@@ -237,17 +218,17 @@
   }
 
   /** 导出到 Excel */
-  const exportToExcel = async (
+  async function exportToExcel(
     data: ExportData[],
     filename: string,
     sheetName: string
-  ): Promise<void> => {
+  ): Promise<void> {
     try {
-      emit('export-progress', 10)
+      emit('exportProgress', 10)
 
       // 处理数据
       const processedData = processData(data)
-      emit('export-progress', 30)
+      emit('exportProgress', 30)
 
       // 创建工作簿
       const workbook = XLSX.utils.book_new()
@@ -268,7 +249,7 @@
         }
       }
 
-      emit('export-progress', 50)
+      emit('exportProgress', 50)
 
       // 创建工作表
       const worksheet = XLSX.utils.json_to_sheet(processedData)
@@ -276,12 +257,12 @@
       // 设置列宽度
       worksheet['!cols'] = calculateColumnWidths(processedData)
 
-      emit('export-progress', 70)
+      emit('exportProgress', 70)
 
       // 添加工作表到工作簿
       XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)
 
-      emit('export-progress', 85)
+      emit('exportProgress', 85)
 
       // 生成 Excel 文件
       const excelBuffer = XLSX.write(workbook, {
@@ -295,7 +276,7 @@
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       })
 
-      emit('export-progress', 95)
+      emit('exportProgress', 95)
 
       // 使用时间戳确保文件名唯一
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
@@ -303,7 +284,7 @@
 
       FileSaver.saveAs(blob, finalFilename)
 
-      emit('export-progress', 100)
+      emit('exportProgress', 100)
 
       // 等待下载开始
       await nextTick()
@@ -325,13 +306,13 @@
       validateData(props.data)
 
       // 触发导出前事件
-      emit('before-export', props.data)
+      emit('beforeExport', props.data)
 
       // 执行导出
       await exportToExcel(props.data, props.filename, props.sheetName)
 
       // 触发成功事件
-      emit('export-success', props.filename, props.data.length)
+      emit('exportSuccess', props.filename, props.data.length)
 
       // 显示成功消息
       if (props.showSuccessMessage) {
@@ -347,7 +328,7 @@
           : new ExportError(`导出失败: ${(error as Error).message}`, 'UNKNOWN_ERROR', error)
 
       // 触发错误事件
-      emit('export-error', exportError)
+      emit('exportError', exportError)
 
       // 显示错误消息
       if (props.showErrorMessage) {
@@ -360,7 +341,7 @@
       console.error('Excel 导出错误:', exportError)
     } finally {
       isExporting.value = false
-      emit('export-progress', 0)
+      emit('exportProgress', 0)
     }
   }, 1000)
 
@@ -371,6 +352,25 @@
     hasData
   })
 </script>
+
+<template>
+  <ElButton
+    v-ripple
+    :type="type"
+    :size="size"
+    :loading="isExporting"
+    :disabled="disabled || !hasData"
+    @click="handleExport"
+  >
+    <template #loading>
+      <ElIcon class="is-loading">
+        <Loading />
+      </ElIcon>
+      {{ loadingText }}
+    </template>
+    <slot>{{ buttonText }}</slot>
+  </ElButton>
+</template>
 
 <style scoped>
   .is-loading {

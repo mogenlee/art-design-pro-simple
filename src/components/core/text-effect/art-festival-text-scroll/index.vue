@@ -1,4 +1,19 @@
 <!-- 节日文本滚动 -->
+<script setup lang="ts">
+  import { useCeremony } from '@/hooks/core/useCeremony'
+  import { useSettingStore } from '@/store/modules/setting'
+
+  defineOptions({ name: 'ArtFestivalTextScroll' })
+
+  const settingStore = useSettingStore()
+  const { showFestivalText } = storeToRefs(settingStore)
+  const { currentFestivalData } = useCeremony()
+
+  function handleClose() {
+    settingStore.setShowFestivalText(false)
+  }
+</script>
+
 <template>
   <div
     class="overflow-hidden transition-[height] duration-600 ease-in-out"
@@ -10,23 +25,8 @@
       v-if="showFestivalText && currentFestivalData?.scrollText !== ''"
       :text="currentFestivalData?.scrollText || ''"
       style="margin-bottom: 12px"
-      showClose
+      show-close
       @close="handleClose"
     />
   </div>
 </template>
-
-<script setup lang="ts">
-  import { useSettingStore } from '@/store/modules/setting'
-  import { useCeremony } from '@/hooks/core/useCeremony'
-
-  defineOptions({ name: 'ArtFestivalTextScroll' })
-
-  const settingStore = useSettingStore()
-  const { showFestivalText } = storeToRefs(settingStore)
-  const { currentFestivalData } = useCeremony()
-
-  const handleClose = () => {
-    settingStore.setShowFestivalText(false)
-  }
-</script>

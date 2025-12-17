@@ -1,50 +1,20 @@
-<template>
-  <ElDialog
-    :title="dialogTitle"
-    :model-value="visible"
-    @update:model-value="handleCancel"
-    width="860px"
-    align-center
-    class="menu-dialog"
-    @closed="handleClosed"
-  >
-    <ArtForm
-      ref="formRef"
-      v-model="form"
-      :items="formItems"
-      :rules="rules"
-      :span="width > 640 ? 12 : 24"
-      :gutter="20"
-      label-width="100px"
-      :show-reset="false"
-      :show-submit="false"
-    >
-      <template #menuType>
-        <ElRadioGroup v-model="form.menuType" :disabled="disableMenuType">
-          <ElRadioButton value="menu" label="menu">菜单</ElRadioButton>
-          <ElRadioButton value="button" label="button">按钮</ElRadioButton>
-        </ElRadioGroup>
-      </template>
-    </ArtForm>
-
-    <template #footer>
-      <span class="dialog-footer">
-        <ElButton @click="handleCancel">取 消</ElButton>
-        <ElButton type="primary" @click="handleSubmit">确 定</ElButton>
-      </span>
-    </template>
-  </ElDialog>
-</template>
-
 <script setup lang="ts">
   import type { FormRules } from 'element-plus'
-  import { ElIcon, ElTooltip } from 'element-plus'
-  import { QuestionFilled } from '@element-plus/icons-vue'
-  import { formatMenuTitle } from '@/utils/router'
-  import type { AppRouteRecord } from '@/types/router'
   import type { FormItem } from '@/components/core/forms/art-form/index.vue'
-  import ArtForm from '@/components/core/forms/art-form/index.vue'
+  import type { AppRouteRecord } from '@/types/router'
+  import { QuestionFilled } from '@element-plus/icons-vue'
   import { useWindowSize } from '@vueuse/core'
+  import { ElIcon, ElTooltip } from 'element-plus'
+  import ArtForm from '@/components/core/forms/art-form/index.vue'
+  import { formatMenuTitle } from '@/utils/router'
+
+  const props = withDefaults(defineProps<Props>(), {
+    visible: false,
+    type: 'menu',
+    lockType: false
+  })
+
+  const emit = defineEmits<Emits>()
 
   const { width } = useWindowSize()
 
@@ -54,7 +24,7 @@
    * @param tooltip 提示文本
    * @returns 渲染函数
    */
-  const createLabelTooltip = (label: string, tooltip: string) => {
+  function createLabelTooltip(label: string, tooltip: string) {
     return () =>
       h('span', { class: 'flex items-center' }, [
         h('span', label),
@@ -107,14 +77,6 @@
     (e: 'update:visible', value: boolean): void
     (e: 'submit', data: MenuFormData): void
   }
-
-  const props = withDefaults(defineProps<Props>(), {
-    visible: false,
-    type: 'menu',
-    lockType: false
-  })
-
-  const emit = defineEmits<Emits>()
 
   const formRef = ref()
   const isEdit = ref(false)
@@ -278,7 +240,7 @@
   /**
    * 重置表单数据
    */
-  const resetForm = (): void => {
+  function resetForm(): void {
     formRef.value?.reset()
     form.menuType = 'menu'
   }
@@ -286,7 +248,7 @@
   /**
    * 加载表单数据（编辑模式）
    */
-  const loadFormData = (): void => {
+  function loadFormData(): void {
     if (!props.editData) return
 
     isEdit.value = true
@@ -325,7 +287,7 @@
   /**
    * 提交表单
    */
-  const handleSubmit = async (): Promise<void> => {
+  async function handleSubmit(): Promise<void> {
     if (!formRef.value) return
 
     try {
@@ -341,14 +303,14 @@
   /**
    * 取消操作
    */
-  const handleCancel = (): void => {
+  function handleCancel(): void {
     emit('update:visible', false)
   }
 
   /**
    * 对话框关闭后的回调
    */
-  const handleClosed = (): void => {
+  function handleClosed(): void {
     resetForm()
     isEdit.value = false
   }
@@ -382,3 +344,41 @@
     }
   )
 </script>
+
+<template>
+  <ElDialog
+    :title="dialogTitle"
+    :model-value="visible"
+    width="860px"
+    align-center
+    class="menu-dialog"
+    @update:model-value="handleCancel"
+    @closed="handleClosed"
+  >
+    <ArtForm
+      ref="formRef"
+      v-model="form"
+      :items="formItems"
+      :rules="rules"
+      :span="width > 640 ? 12 : 24"
+      :gutter="20"
+      label-width="100px"
+      :show-reset="false"
+      :show-submit="false"
+    >
+      <template #menuType>
+        <ElRadioGroup v-model="form.menuType" :disabled="disableMenuType">
+          <ElRadioButton value="menu" label="menu"> 菜单 </ElRadioButton>
+          <ElRadioButton value="button" label="button"> 按钮 </ElRadioButton>
+        </ElRadioGroup>
+      </template>
+    </ArtForm>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <ElButton @click="handleCancel">取 消</ElButton>
+        <ElButton type="primary" @click="handleSubmit">确 定</ElButton>
+      </span>
+    </template>
+  </ElDialog>
+</template>

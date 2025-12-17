@@ -17,24 +17,21 @@
  * @author Art Design Pro Team
  */
 
-import { ref, reactive, computed, onMounted, onUnmounted, nextTick, readonly } from 'vue'
-import { useWindowSize } from '@vueuse/core'
-import { useTableColumns } from './useTableColumns'
+import type { ApiResponse } from '@utils/table/tableCache'
+import type { TableError } from '@utils/table/tableUtils'
 import type { ColumnOption } from '@/types/component'
+import { CacheInvalidationStrategy, TableCache } from '@utils/table/tableCache'
+import { tableConfig } from '@utils/table/tableConfig'
 import {
-  TableCache,
-  CacheInvalidationStrategy,
-  type ApiResponse
-} from '../../utils/table/tableCache'
-import {
-  type TableError,
+  createErrorHandler,
+  createSmartDebounce,
   defaultResponseAdapter,
   extractTableData,
-  updatePaginationFromResponse,
-  createSmartDebounce,
-  createErrorHandler
-} from '../../utils/table/tableUtils'
-import { tableConfig } from '../../utils/table/tableConfig'
+  updatePaginationFromResponse
+} from '@utils/table/tableUtils'
+import { useWindowSize } from '@vueuse/core'
+import { computed, nextTick, onMounted, onUnmounted, reactive, readonly, ref } from 'vue'
+import { useTableColumns } from '@/hooks'
 
 // 类型推导工具类型
 type InferApiParams<T> = T extends (params: infer P) => any ? P : never
@@ -400,8 +397,8 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
       // 状态机：请求失败，进入 error 状态
       loadingState.value = 'error'
       data.value = []
-      const tableError = handleError(err, '获取表格数据失败')
-      throw tableError
+
+      throw handleError(err, '获取表格数据失败')
     } finally {
       // 只有当前控制器是活跃的才清空
       if (abortController === currentController) {

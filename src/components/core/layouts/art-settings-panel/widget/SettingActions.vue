@@ -1,25 +1,12 @@
 <!-- 设置操作按钮 -->
-<template>
-  <div
-    class="mt-10 flex gap-8 border-t border-[var(--default-border)] bg-[var(--art-bg-color)] pt-5"
-  >
-    <ElButton type="primary" class="flex-1 !h-8" @click="handleCopyConfig">
-      {{ $t('setting.actions.copyConfig') }}
-    </ElButton>
-    <ElButton type="danger" plain class="flex-1 !h-8" @click="handleResetConfig">
-      {{ $t('setting.actions.resetConfig') }}
-    </ElButton>
-  </div>
-</template>
-
 <script setup lang="ts">
-  import { nextTick } from 'vue'
-  import { useSettingStore } from '@/store/modules/setting'
-  import { SETTING_DEFAULT_CONFIG } from '@/config/setting'
   import { useClipboard } from '@vueuse/core'
+  import { nextTick } from 'vue'
   import { useI18n } from 'vue-i18n'
+  import { SETTING_DEFAULT_CONFIG } from '@/config/setting'
   import { MenuThemeEnum } from '@/enums/appEnum'
   import { useTheme } from '@/hooks/core/useTheme'
+  import { useSettingStore } from '@/store/modules/setting'
 
   defineOptions({ name: 'SettingActions' })
 
@@ -95,7 +82,7 @@
   /**
    * 将值转换为代码字符串
    */
-  const valueToCode = (value: any, enumMap?: Record<string, string>): string => {
+  function valueToCode(value: any, enumMap?: Record<string, string>): string {
     if (value === null) return 'null'
     if (value === undefined) return 'undefined'
 
@@ -114,7 +101,7 @@
   /**
    * 生成配置代码
    */
-  const generateConfigCode = (): string => {
+  function generateConfigCode(): string {
     const lines = ['export const SETTING_DEFAULT_CONFIG = {']
 
     CONFIG_ITEMS.forEach((item) => {
@@ -130,7 +117,7 @@
   /**
    * 复制配置到剪贴板
    */
-  const handleCopyConfig = async () => {
+  async function handleCopyConfig() {
     try {
       const configText = generateConfigCode()
       await copy(configText)
@@ -150,11 +137,7 @@
   /**
    * 切换布尔值配置（如果当前值与默认值不同）
    */
-  const toggleIfDifferent = (
-    currentValue: boolean,
-    defaultValue: boolean,
-    toggleFn: () => void
-  ) => {
+  function toggleIfDifferent(currentValue: boolean, defaultValue: boolean, toggleFn: () => void) {
     if (currentValue !== defaultValue) {
       toggleFn()
     }
@@ -163,7 +146,7 @@
   /**
    * 重置配置为默认值
    */
-  const handleResetConfig = async () => {
+  async function handleResetConfig() {
     try {
       const config = SETTING_DEFAULT_CONFIG
 
@@ -233,3 +216,16 @@
     }
   }
 </script>
+
+<template>
+  <div
+    class="mt-10 flex gap-8 border-t border-[var(--default-border)] bg-[var(--art-bg-color)] pt-5"
+  >
+    <ElButton type="primary" class="flex-1 !h-8" @click="handleCopyConfig">
+      {{ $t('setting.actions.copyConfig') }}
+    </ElButton>
+    <ElButton type="danger" plain class="flex-1 !h-8" @click="handleResetConfig">
+      {{ $t('setting.actions.resetConfig') }}
+    </ElButton>
+  </div>
+</template>

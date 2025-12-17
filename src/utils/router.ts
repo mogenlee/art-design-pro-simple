@@ -5,11 +5,11 @@
  *
  * @module utils/router
  */
-import { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
-import AppConfig from '@/config'
+import type { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
+import AppConfig from '@/config'
 import i18n, { $t } from '@/locales'
+import 'nprogress/nprogress.css'
 
 /** 扩展的路由配置类型 */
 export type AppRouteRecordRaw = RouteRecordRaw & {
@@ -17,7 +17,7 @@ export type AppRouteRecordRaw = RouteRecordRaw & {
 }
 
 /** 顶部进度条配置 */
-export const configureNProgress = () => {
+export function configureNProgress() {
   NProgress.configure({
     easing: 'ease',
     speed: 600,
@@ -30,7 +30,7 @@ export const configureNProgress = () => {
  * 设置页面标题，根据路由元信息和系统信息拼接标题
  * @param to 当前路由对象
  */
-export const setPageTitle = (to: RouteLocationNormalized): void => {
+export function setPageTitle(to: RouteLocationNormalized): void {
   const { title } = to.meta
   if (title) {
     setTimeout(() => {
@@ -44,7 +44,7 @@ export const setPageTitle = (to: RouteLocationNormalized): void => {
  * @param title 菜单标题，可以是 i18n 的 key，也可以是字符串
  * @returns 格式化后的菜单标题
  */
-export const formatMenuTitle = (title: string): string => {
+export function formatMenuTitle(title: string): string {
   if (title) {
     if (title.startsWith('menus.')) {
       // 使用 te() 方法检查翻译键值是否存在，避免控制台警告

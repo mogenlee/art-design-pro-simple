@@ -1,101 +1,18 @@
 <!-- 标签页 -->
-<template>
-  <div
-    v-if="showWorkTab"
-    class="box-border flex-b w-full px-5 mb-3 select-none max-sm:px-[15px]"
-    :class="[
-      tabStyle === 'tab-card' ? 'py-1 border-b border-[var(--art-card-border)]' : '',
-      tabStyle === 'tab-google' ? 'pt-1 pb-0 border-b border-[var(--art-card-border)]' : ''
-    ]"
-  >
-    <div class="w-full overflow-hidden" ref="scrollRef">
-      <ul
-        class="float-left whitespace-nowrap !bg-transparent flex"
-        :class="[tabStyle === 'tab-google' ? 'pl-1' : '']"
-        ref="tabsRef"
-        :style="{
-          transform: `translateX(${scrollState.translateX}px)`,
-          transition: `${scrollState.transition}`
-        }"
-      >
-        <li
-          class="art-card-xs inline-flex flex-cc h-8 mr-1.5 text-xs c-p hover:text-theme group"
-          :class="[
-            item.path === activeTab ? 'activ-tab !text-theme' : 'text-g-600 dark:text-g-800',
-            tabStyle === 'tab-google' ? 'google-tab relative !h-8 !leading-8 !border-none' : ''
-          ]"
-          :style="{
-            padding: item.fixedTab ? '0 10px' : '0 8px 0 12px',
-            borderRadius:
-              tabStyle === 'tab-google'
-                ? 'calc(var(--custom-radius) / 2.5 + 4px) !important'
-                : 'calc(var(--custom-radius) / 2.5 + 2px) !important'
-          }"
-          v-for="(item, index) in list"
-          :key="item.path"
-          :ref="item.path"
-          :id="`scroll-li-${index}`"
-          @click="clickTab(item)"
-          @contextmenu.prevent="(e: MouseEvent) => showMenu(e, item.path)"
-        >
-          <ArtSvgIcon
-            v-show="item.icon"
-            :icon="item.icon"
-            class="text-base mr-1 group-hover:text-theme"
-            :class="item.path === activeTab ? 'text-theme' : 'text-g-600'"
-          />
-          {{ item.customTitle || formatMenuTitle(item.title) }}
-          <span
-            v-if="list.length > 1 && !item.fixedTab"
-            class="inline-flex flex-cc relative ml-0.5 p-1 rounded-full tad-200 hover:bg-g-200"
-            @click.stop="closeWorktab('current', item.path)"
-          >
-            <ArtSvgIcon icon="ri:close-large-fill" class="text-[10px] text-g-600" />
-          </span>
-          <div
-            v-if="tabStyle === 'tab-google'"
-            class="line absolute top-0 bottom-0 left-0 w-px h-4 my-auto bg-g-400 transition-opacity duration-150"
-          />
-        </li>
-      </ul>
-    </div>
-
-    <div class="flex">
-      <div
-        class="flex-cc art-card-xs relative top-0 size-8 leading-8 text-center c-p tad-200 hover:!bg-hover-color"
-        :style="{
-          borderRadius: 'calc(var(--custom-radius) / 2.5 + 0px)',
-          marginTop: tabStyle === 'tab-google' ? '-2px' : ''
-        }"
-        @click="(e: MouseEvent) => showMenu(e, activeTab)"
-      >
-        <ArtSvgIcon icon="iconamoon:arrow-down-2-thin" class="text-2xl text-g-700" />
-      </div>
-    </div>
-
-    <ArtMenuRight
-      ref="menuRef"
-      :menu-items="menuItems"
-      :menu-width="140"
-      :border-radius="10"
-      @select="handleSelect"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
-  import { computed, onMounted, ref, watch, nextTick, onUnmounted } from 'vue'
-  import { LocationQueryRaw, useRoute, useRouter } from 'vue-router'
-  import { useI18n } from 'vue-i18n'
+  import type { LocationQueryRaw } from 'vue-router'
+  import type { MenuItemType } from '../../others/art-menu-right/index.vue'
+  import type { WorkTab } from '@/types'
   import { storeToRefs } from 'pinia'
 
-  import { useWorktabStore } from '@/store/modules/worktab'
-  import { useUserStore } from '@/store/modules/user'
-  import { formatMenuTitle } from '@/utils/router'
-  import { useSettingStore } from '@/store/modules/setting'
-  import { MenuItemType } from '../../others/art-menu-right/index.vue'
+  import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+  import { useI18n } from 'vue-i18n'
+  import { useRoute, useRouter } from 'vue-router'
   import { useCommon } from '@/hooks/core/useCommon'
-  import { WorkTab } from '@/types'
+  import { useSettingStore } from '@/store/modules/setting'
+  import { useUserStore } from '@/store/modules/user'
+  import { useWorktabStore } from '@/store/modules/worktab'
+  import { formatMenuTitle } from '@/utils/router'
 
   defineOptions({ name: 'ArtWorkTab' })
 
@@ -146,7 +63,7 @@
   const activeTabIndex = computed(() => list.value.findIndex((tab) => tab.path === activeTab.value))
 
   // 右键菜单逻辑
-  const useContextMenu = () => {
+  function useContextMenu() {
     const getClickedTabInfo = () => {
       const clickedIndex = list.value.findIndex((tab) => tab.path === clickedPath.value)
       const currentTab = list.value[clickedIndex]
@@ -224,7 +141,7 @@
   }
 
   // 滚动逻辑
-  const useScrolling = () => {
+  function useScrolling() {
     const setTransition = () => {
       scrollState.value.transition = 'transform 0.5s cubic-bezier(0.15, 0, 0.15, 1)'
       setTimeout(() => {
@@ -301,7 +218,7 @@
   }
 
   // 事件处理逻辑
-  const useEventHandlers = () => {
+  function useEventHandlers() {
     const { setTransition, adjustPositionAfterClose } = useScrolling()
 
     const handleWheelScroll = (event: WheelEvent) => {
@@ -369,7 +286,7 @@
   }
 
   // 标签页操作逻辑
-  const useTabOperations = (adjustPositionAfterClose: () => void) => {
+  function useTabOperations(adjustPositionAfterClose: () => void) {
     const clickTab = (item: WorkTab) => {
       router.push({
         path: item.path,
@@ -478,6 +395,90 @@
     }
   )
 </script>
+
+<template>
+  <div
+    v-if="showWorkTab"
+    class="box-border flex-b w-full px-5 mb-3 select-none max-sm:px-[15px]"
+    :class="[
+      tabStyle === 'tab-card' ? 'py-1 border-b border-[var(--art-card-border)]' : '',
+      tabStyle === 'tab-google' ? 'pt-1 pb-0 border-b border-[var(--art-card-border)]' : ''
+    ]"
+  >
+    <div ref="scrollRef" class="w-full overflow-hidden">
+      <ul
+        ref="tabsRef"
+        class="float-left whitespace-nowrap !bg-transparent flex"
+        :class="[tabStyle === 'tab-google' ? 'pl-1' : '']"
+        :style="{
+          transform: `translateX(${scrollState.translateX}px)`,
+          transition: `${scrollState.transition}`
+        }"
+      >
+        <li
+          v-for="(item, index) in list"
+          :id="`scroll-li-${index}`"
+          :key="item.path"
+          :ref="item.path"
+          class="art-card-xs inline-flex flex-cc h-8 mr-1.5 text-xs c-p hover:text-theme group"
+          :class="[
+            item.path === activeTab ? 'activ-tab !text-theme' : 'text-g-600 dark:text-g-800',
+            tabStyle === 'tab-google' ? 'google-tab relative !h-8 !leading-8 !border-none' : ''
+          ]"
+          :style="{
+            padding: item.fixedTab ? '0 10px' : '0 8px 0 12px',
+            borderRadius:
+              tabStyle === 'tab-google'
+                ? 'calc(var(--custom-radius) / 2.5 + 4px) !important'
+                : 'calc(var(--custom-radius) / 2.5 + 2px) !important'
+          }"
+          @click="clickTab(item)"
+          @contextmenu.prevent="(e: MouseEvent) => showMenu(e, item.path)"
+        >
+          <ArtSvgIcon
+            v-show="item.icon"
+            :icon="item.icon"
+            class="text-base mr-1 group-hover:text-theme"
+            :class="item.path === activeTab ? 'text-theme' : 'text-g-600'"
+          />
+          {{ item.customTitle || formatMenuTitle(item.title) }}
+          <span
+            v-if="list.length > 1 && !item.fixedTab"
+            class="inline-flex flex-cc relative ml-0.5 p-1 rounded-full tad-200 hover:bg-g-200"
+            @click.stop="closeWorktab('current', item.path)"
+          >
+            <ArtSvgIcon icon="ri:close-large-fill" class="text-[10px] text-g-600" />
+          </span>
+          <div
+            v-if="tabStyle === 'tab-google'"
+            class="line absolute top-0 bottom-0 left-0 w-px h-4 my-auto bg-g-400 transition-opacity duration-150"
+          />
+        </li>
+      </ul>
+    </div>
+
+    <div class="flex">
+      <div
+        class="flex-cc art-card-xs relative top-0 size-8 leading-8 text-center c-p tad-200 hover:!bg-hover-color"
+        :style="{
+          borderRadius: 'calc(var(--custom-radius) / 2.5 + 0px)',
+          marginTop: tabStyle === 'tab-google' ? '-2px' : ''
+        }"
+        @click="(e: MouseEvent) => showMenu(e, activeTab)"
+      >
+        <ArtSvgIcon icon="iconamoon:arrow-down-2-thin" class="text-2xl text-g-700" />
+      </div>
+    </div>
+
+    <ArtMenuRight
+      ref="menuRef"
+      :menu-items="menuItems"
+      :menu-width="140"
+      :border-radius="10"
+      @select="handleSelect"
+    />
+  </div>
+</template>
 
 <style scoped>
   .google-tab.activ-tab {

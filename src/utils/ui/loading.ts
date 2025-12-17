@@ -34,7 +34,7 @@ import { fourDotsSpinnerSvg } from '@/assets/svg/loading'
  * 获取当前主题对应的loading背景色
  * @returns 背景色字符串
  */
-const getLoadingBackground = (): string => {
+function getLoadingBackground(): string {
   const isDark = document.documentElement.classList.contains('dark')
   return isDark ? 'rgba(7, 7, 7, 0.85)' : '#fff'
 }

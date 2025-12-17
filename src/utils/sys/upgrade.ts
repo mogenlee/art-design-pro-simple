@@ -1,3 +1,4 @@
+import { ElNotification } from 'element-plus'
 /**
  * 系统版本升级管理模块
  *
@@ -35,7 +36,6 @@
  * @author Art Design Pro Team
  */
 import { upgradeLogList } from '@/mock/upgrade/changeLog'
-import { ElNotification } from 'element-plus'
 import { useUserStore } from '@/store/modules/user'
 import { StorageConfig } from '@/utils/storage/storage-config'
 

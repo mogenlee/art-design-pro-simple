@@ -1,13 +1,19 @@
-<!-- 视频播放器组件：https://h5player.bytedance.com/-->
-<template>
-  <div :id="playerId" />
-</template>
-
+<!-- 视频播放器组件：https://h5player.bytedance.com/ -->
 <script setup lang="ts">
   import Player from 'xgplayer'
   import 'xgplayer/dist/index.min.css'
 
   defineOptions({ name: 'ArtVideoPlayer' })
+
+  const props = withDefaults(defineProps<Props>(), {
+    playerId: '',
+    videoUrl: '',
+    posterUrl: '',
+    autoplay: false,
+    volume: 1,
+    loop: false,
+    muted: false
+  })
 
   interface Props {
     /** 播放器容器 ID */
@@ -28,16 +34,6 @@
     muted?: boolean
     commonStyle?: VideoPlayerStyle
   }
-
-  const props = withDefaults(defineProps<Props>(), {
-    playerId: '',
-    videoUrl: '',
-    posterUrl: '',
-    autoplay: false,
-    volume: 1,
-    loop: false,
-    muted: false
-  })
 
   // 设置属性默认值
 
@@ -109,3 +105,7 @@
     }
   })
 </script>
+
+<template>
+  <div :id="playerId" />
+</template>

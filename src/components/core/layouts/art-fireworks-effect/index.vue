@@ -1,18 +1,11 @@
 <!-- 烟花效果 | 礼花效果 -->
-<template>
-  <canvas
-    ref="canvasRef"
-    class="fixed top-0 left-0 z-[9999] w-full h-full pointer-events-none"
-  ></canvas>
-</template>
-
 <script setup lang="ts">
-  import { useEventListener } from '@vueuse/core'
-  import { mittBus } from '@/utils/sys'
   import type { Handler } from 'mitt'
+  import { useEventListener } from '@vueuse/core'
   import bp from '@/assets/images/ceremony/hb.png'
   import sd from '@/assets/images/ceremony/sd.png'
   import yd from '@/assets/images/ceremony/yd.png'
+  import { mittBus } from '@/utils/sys'
 
   defineOptions({ name: 'ArtFireworksEffect' })
 
@@ -563,7 +556,7 @@
    * 监听 Ctrl+Shift+P 或 Cmd+Shift+P 组合键触发烟花
    * @param event 键盘事件对象
    */
-  const handleKeyPress = (event: KeyboardEvent): void => {
+  function handleKeyPress(event: KeyboardEvent): void {
     const isFireworkShortcut =
       (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') ||
       (event.metaKey && event.shiftKey && event.key.toLowerCase() === 'p')
@@ -578,7 +571,7 @@
    * 调整Canvas画布大小
    * 响应窗口大小变化，确保画布始终覆盖整个视口
    */
-  const resizeCanvas = (): void => {
+  function resizeCanvas(): void {
     if (!canvasRef.value) return
 
     const { innerWidth, innerHeight } = window
@@ -631,3 +624,7 @@
     mittBus.off('triggerFireworks', handleFireworkTrigger)
   })
 </script>
+
+<template>
+  <canvas ref="canvasRef" class="fixed top-0 left-0 z-[9999] w-full h-full pointer-events-none" />
+</template>

@@ -1,13 +1,7 @@
 <!-- 一个让 SVG 图片跟随主题的组件，只对特定 svg 图片生效，不建议开发者使用 -->
 <!-- 图片地址 https://iconpark.oceanengine.com/illustrations/13 -->
-<template>
-  <div class="theme-svg" :style="sizeStyle">
-    <div v-if="src" class="svg-container" v-html="svgContent"></div>
-  </div>
-</template>
-
 <script setup lang="ts">
-  import { ref, computed, watchEffect } from 'vue'
+  import { computed, ref, watchEffect } from 'vue'
 
   interface Props {
     size?: string | number
@@ -43,7 +37,7 @@
   } as const
 
   // 将主题色应用到 SVG 内容
-  const applyThemeToSvg = (content: string): string => {
+  function applyThemeToSvg(content: string): string {
     return Object.entries(COLOR_MAPPINGS).reduce(
       (processedContent, [originalColor, themeColor]) => {
         const fillRegex = new RegExp(`fill="${originalColor}"`, 'gi')
@@ -58,7 +52,7 @@
   }
 
   // 加载 SVG 文件内容
-  const loadSvgContent = async () => {
+  async function loadSvgContent() {
     if (!props.src) {
       svgContent.value = ''
       return
@@ -82,6 +76,12 @@
     loadSvgContent()
   })
 </script>
+
+<template>
+  <div class="theme-svg" :style="sizeStyle">
+    <div v-if="src" class="svg-container" v-html="svgContent" />
+  </div>
+</template>
 
 <style lang="scss" scoped>
   .theme-svg {

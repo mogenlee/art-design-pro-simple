@@ -1,39 +1,3 @@
-<template>
-  <div class="flex-cb mb-4 last:mb-2" :class="{ 'mobile-hide': config.mobileHide }">
-    <span class="text-sm">{{ config.label }}</span>
-
-    <!-- 开关类型 -->
-    <ElSwitch v-if="config.type === 'switch'" :model-value="modelValue" @change="handleChange" />
-
-    <!-- 数字输入类型 -->
-    <ElInputNumber
-      v-else-if="config.type === 'input-number'"
-      :model-value="modelValue"
-      :min="config.min"
-      :max="config.max"
-      :step="config.step"
-      :style="config.style"
-      :controls-position="config.controlsPosition"
-      @change="handleChange"
-    />
-
-    <!-- 选择器类型 -->
-    <ElSelect
-      v-else-if="config.type === 'select'"
-      :model-value="modelValue"
-      :style="config.style"
-      @change="handleChange"
-    >
-      <ElOption
-        v-for="option in normalizedOptions"
-        :key="option.value"
-        :label="option.label"
-        :value="option.value"
-      />
-    </ElSelect>
-  </div>
-</template>
-
 <script setup lang="ts">
   import type { ComputedRef } from 'vue'
 
@@ -83,7 +47,7 @@
     }
   })
 
-  const handleChange = (value: any) => {
+  function handleChange(value: any) {
     try {
       emit('change', value)
     } catch (error) {
@@ -91,6 +55,42 @@
     }
   }
 </script>
+
+<template>
+  <div class="flex-cb mb-4 last:mb-2" :class="{ 'mobile-hide': config.mobileHide }">
+    <span class="text-sm">{{ config.label }}</span>
+
+    <!-- 开关类型 -->
+    <ElSwitch v-if="config.type === 'switch'" :model-value="modelValue" @change="handleChange" />
+
+    <!-- 数字输入类型 -->
+    <ElInputNumber
+      v-else-if="config.type === 'input-number'"
+      :model-value="modelValue"
+      :min="config.min"
+      :max="config.max"
+      :step="config.step"
+      :style="config.style"
+      :controls-position="config.controlsPosition"
+      @change="handleChange"
+    />
+
+    <!-- 选择器类型 -->
+    <ElSelect
+      v-else-if="config.type === 'select'"
+      :model-value="modelValue"
+      :style="config.style"
+      @change="handleChange"
+    >
+      <ElOption
+        v-for="option in normalizedOptions"
+        :key="option.value"
+        :label="option.label"
+        :value="option.value"
+      />
+    </ElSelect>
+  </div>
+</template>
 
 <style lang="scss" scoped>
   @media screen and (width <= 768px) {

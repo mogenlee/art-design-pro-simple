@@ -1,65 +1,15 @@
 <!-- 菜单管理页面 -->
-<template>
-  <div class="menu-page art-full-height">
-    <!-- 搜索栏 -->
-    <ArtSearchBar
-      v-model="formFilters"
-      :items="formItems"
-      :showExpand="false"
-      @reset="handleReset"
-      @search="handleSearch"
-    />
-
-    <ElCard class="art-table-card" shadow="never">
-      <!-- 表格头部 -->
-      <ArtTableHeader
-        :showZebra="false"
-        :loading="loading"
-        v-model:columns="columnChecks"
-        @refresh="handleRefresh"
-      >
-        <template #left>
-          <ElButton v-auth="'add'" @click="handleAddMenu" v-ripple> 添加菜单 </ElButton>
-          <ElButton @click="toggleExpand" v-ripple>
-            {{ isExpanded ? '收起' : '展开' }}
-          </ElButton>
-        </template>
-      </ArtTableHeader>
-
-      <ArtTable
-        ref="tableRef"
-        rowKey="path"
-        :loading="loading"
-        :columns="columns"
-        :data="filteredTableData"
-        :stripe="false"
-        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        :default-expand-all="false"
-      />
-
-      <!-- 菜单弹窗 -->
-      <MenuDialog
-        v-model:visible="dialogVisible"
-        :type="dialogType"
-        :editData="editData"
-        :lockType="lockMenuType"
-        @submit="handleSubmit"
-      />
-    </ElCard>
-  </div>
-  <EditDialog ref="editRef"></EditDialog>
-</template>
-
 <script setup lang="ts">
-  import { formatMenuTitle } from '@/utils/router'
+  import type { AppRouteRecord } from '@/types/router'
+  import { ElMessageBox, ElTag } from 'element-plus'
+  import { useI18n } from 'vue-i18n'
+  import { fetchGetMenuList } from '@/api/system-manage'
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTableColumns } from '@/hooks/core/useTableColumns'
-  import type { AppRouteRecord } from '@/types/router'
-  import MenuDialog from './modules/menu-dialog.vue'
-  import { fetchGetMenuList } from '@/api/system-manage'
-  import { ElTag, ElMessageBox } from 'element-plus'
-  import { useI18n } from 'vue-i18n'
+  import { formatMenuTitle } from '@/utils/router'
   import EditDialog from './edit.vue'
+  import MenuDialog from './modules/menu-dialog.vue'
+
   defineOptions({ name: 'Menus' })
   const { t } = useI18n()
   const editRef = shallowRef()
@@ -106,7 +56,7 @@
   /**
    * 获取菜单列表数据
    */
-  const getMenuList = async (): Promise<void> => {
+  async function getMenuList(): Promise<void> {
     loading.value = true
 
     try {
@@ -124,9 +74,9 @@
    * @param row 菜单行数据
    * @returns 标签颜色类型
    */
-  const getMenuTypeTag = (
+  function getMenuTypeTag(
     row: AppRouteRecord
-  ): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
+  ): 'primary' | 'success' | 'warning' | 'info' | 'danger' {
     if (row.meta?.isAuthButton) return 'danger'
     if (row.children?.length) return 'info'
     if (row.meta?.link && row.meta?.isIframe) return 'success'
@@ -140,7 +90,7 @@
    * @param row 菜单行数据
    * @returns 菜单类型文本
    */
-  const getMenuTypeText = (row: AppRouteRecord): string => {
+  function getMenuTypeText(row: AppRouteRecord): string {
     if (row.meta?.isAuthButton) return '按钮'
     if (row.children?.length) return '目录'
     if (row.meta?.link && row.meta?.isIframe) return '内嵌'
@@ -239,7 +189,7 @@
   /**
    * 重置搜索条件
    */
-  const handleReset = (): void => {
+  function handleReset(): void {
     Object.assign(formFilters, { ...initialSearchState })
     Object.assign(appliedFilters, { ...initialSearchState })
     getMenuList()
@@ -248,7 +198,7 @@
   /**
    * 执行搜索
    */
-  const handleSearch = (): void => {
+  function handleSearch(): void {
     Object.assign(appliedFilters, { ...formFilters })
     getMenuList()
   }
@@ -256,7 +206,7 @@
   /**
    * 刷新菜单列表
    */
-  const handleRefresh = (): void => {
+  function handleRefresh(): void {
     getMenuList()
   }
 
@@ -265,7 +215,7 @@
    * @param obj 要克隆的对象
    * @returns 克隆后的对象
    */
-  const deepClone = <T,>(obj: T): T => {
+  function deepClone<T>(obj: T): T {
     if (obj === null || typeof obj !== 'object') return obj
     if (obj instanceof Date) return new Date(obj) as T
     if (Array.isArray(obj)) return obj.map((item) => deepClone(item)) as T
@@ -284,7 +234,7 @@
    * @param items 菜单项数组
    * @returns 转换后的菜单项数组
    */
-  const convertAuthListToChildren = (items: AppRouteRecord[]): AppRouteRecord[] => {
+  function convertAuthListToChildren(items: AppRouteRecord[]): AppRouteRecord[] {
     return items.map((item) => {
       const clonedItem = deepClone(item)
 
@@ -320,7 +270,7 @@
    * @param items 菜单项数组
    * @returns 搜索结果数组
    */
-  const searchMenu = (items: AppRouteRecord[]): AppRouteRecord[] => {
+  function searchMenu(items: AppRouteRecord[]): AppRouteRecord[] {
     const results: AppRouteRecord[] = []
 
     for (const item of items) {
@@ -358,7 +308,7 @@
   /**
    * 添加菜单
    */
-  const handleAddMenu = (): void => {
+  function handleAddMenu(): void {
     // dialogType.value = 'menu'
     // editData.value = null
     // lockMenuType.value = true
@@ -370,7 +320,7 @@
   /**
    * 添加权限按钮
    */
-  const handleAddAuth = (): void => {
+  function handleAddAuth(): void {
     dialogType.value = 'menu'
     editData.value = null
     lockMenuType.value = false
@@ -381,7 +331,7 @@
    * 编辑菜单
    * @param row 菜单行数据
    */
-  const handleEditMenu = (row: AppRouteRecord): void => {
+  function handleEditMenu(row: AppRouteRecord): void {
     dialogType.value = 'menu'
     editData.value = row
     lockMenuType.value = true
@@ -392,7 +342,7 @@
    * 编辑权限按钮
    * @param row 权限行数据
    */
-  const handleEditAuth = (row: AppRouteRecord): void => {
+  function handleEditAuth(row: AppRouteRecord): void {
     dialogType.value = 'button'
     editData.value = {
       title: row.meta?.title,
@@ -419,7 +369,7 @@
    * 提交表单数据
    * @param formData 表单数据
    */
-  const handleSubmit = (formData: MenuFormData): void => {
+  function handleSubmit(formData: MenuFormData): void {
     console.log('提交数据:', formData)
     // TODO: 调用API保存数据
     getMenuList()
@@ -428,7 +378,7 @@
   /**
    * 删除菜单
    */
-  const handleDeleteMenu = async (): Promise<void> => {
+  async function handleDeleteMenu(): Promise<void> {
     try {
       await ElMessageBox.confirm('确定要删除该菜单吗？删除后无法恢复', '提示', {
         confirmButtonText: '确定',
@@ -447,7 +397,7 @@
   /**
    * 删除权限按钮
    */
-  const handleDeleteAuth = async (): Promise<void> => {
+  async function handleDeleteAuth(): Promise<void> {
     try {
       await ElMessageBox.confirm('确定要删除该权限吗？删除后无法恢复', '提示', {
         confirmButtonText: '确定',
@@ -466,7 +416,7 @@
   /**
    * 切换展开/收起所有菜单
    */
-  const toggleExpand = (): void => {
+  function toggleExpand(): void {
     isExpanded.value = !isExpanded.value
     nextTick(() => {
       if (tableRef.value?.elTableRef && filteredTableData.value) {
@@ -483,3 +433,54 @@
     })
   }
 </script>
+
+<template>
+  <div class="menu-page art-full-height">
+    <!-- 搜索栏 -->
+    <ArtSearchBar
+      v-model="formFilters"
+      :items="formItems"
+      :show-expand="false"
+      @reset="handleReset"
+      @search="handleSearch"
+    />
+
+    <ElCard class="art-table-card" shadow="never">
+      <!-- 表格头部 -->
+      <ArtTableHeader
+        v-model:columns="columnChecks"
+        :show-zebra="false"
+        :loading="loading"
+        @refresh="handleRefresh"
+      >
+        <template #left>
+          <ElButton v-auth="'add'" v-ripple @click="handleAddMenu"> 添加菜单 </ElButton>
+          <ElButton v-ripple @click="toggleExpand">
+            {{ isExpanded ? '收起' : '展开' }}
+          </ElButton>
+        </template>
+      </ArtTableHeader>
+
+      <ArtTable
+        ref="tableRef"
+        row-key="path"
+        :loading="loading"
+        :columns="columns"
+        :data="filteredTableData"
+        :stripe="false"
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+        :default-expand-all="false"
+      />
+
+      <!-- 菜单弹窗 -->
+      <MenuDialog
+        v-model:visible="dialogVisible"
+        :type="dialogType"
+        :edit-data="editData"
+        :lock-type="lockMenuType"
+        @submit="handleSubmit"
+      />
+    </ElCard>
+  </div>
+  <EditDialog ref="editRef" />
+</template>

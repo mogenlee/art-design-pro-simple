@@ -1,19 +1,9 @@
 <!-- 散点图 -->
-<template>
-  <div
-    ref="chartRef"
-    class="relative w-full"
-    :style="{ height: props.height }"
-    v-loading="props.loading"
-  >
-  </div>
-</template>
-
 <script setup lang="ts">
   import type { EChartsOption } from '@/plugins/echarts'
-  import { getCssVar } from '@/utils/ui'
-  import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
   import type { ScatterChartProps } from '@/types/component/chart'
+  import { useChartComponent, useChartOps } from '@/hooks/core/useChart'
+  import { getCssVar } from '@/utils/ui'
 
   defineOptions({ name: 'ArtScatterChart' })
 
@@ -113,3 +103,12 @@
     }
   })
 </script>
+
+<template>
+  <div
+    ref="chartRef"
+    v-loading="props.loading"
+    class="relative w-full"
+    :style="{ height: props.height }"
+  />
+</template>

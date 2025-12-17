@@ -49,33 +49,36 @@
  * @author Art Design Pro Team
  */
 
-import { echarts, type EChartsOption } from '@/plugins/echarts'
+import type { EChartsOption } from '@/plugins/echarts'
+import type { BaseChartProps, ChartThemeConfig, UseChartOptions } from '@/types/component/chart'
 import { storeToRefs } from 'pinia'
+import { echarts } from '@/plugins/echarts'
 import { useSettingStore } from '@/store/modules/setting'
 import { getCssVar } from '@/utils/ui'
-import type { BaseChartProps, ChartThemeConfig, UseChartOptions } from '@/types/component/chart'
 
 // 图表主题配置
-export const useChartOps = (): ChartThemeConfig => ({
-  /** */
-  chartHeight: '16rem',
-  /** 字体大小 */
-  fontSize: 13,
-  /** 字体颜色 */
-  fontColor: '#999',
-  /** 主题颜色 */
-  themeColor: getCssVar('--el-color-primary-light-1'),
-  /** 颜色组 */
-  colors: [
-    getCssVar('--el-color-primary-light-1'),
-    '#4ABEFF',
-    '#EDF2FF',
-    '#14DEBA',
-    '#FFAF20',
-    '#FA8A6C',
-    '#FFAF20'
-  ]
-})
+export function useChartOps(): ChartThemeConfig {
+  return {
+    /** */
+    chartHeight: '16rem',
+    /** 字体大小 */
+    fontSize: 13,
+    /** 字体颜色 */
+    fontColor: '#999',
+    /** 主题颜色 */
+    themeColor: getCssVar('--el-color-primary-light-1'),
+    /** 颜色组 */
+    colors: [
+      getCssVar('--el-color-primary-light-1'),
+      '#4ABEFF',
+      '#EDF2FF',
+      '#14DEBA',
+      '#FFAF20',
+      '#FA8A6C',
+      '#FFAF20'
+    ]
+  }
+}
 
 // 常量定义
 const RESIZE_DELAYS = [50, 100, 200, 350] as const

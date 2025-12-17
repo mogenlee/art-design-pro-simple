@@ -7,6 +7,22 @@
 
   defineOptions({ name: 'ArtDialog' })
 
+  withDefaults(defineProps<Props>(), {
+    width: '30%',
+    clickModalClose: false,
+    center: false,
+    title: 'add',
+    confirmButtonText: 'confirm',
+    cancelButtonText: 'cancel',
+    customClass: ''
+  })
+
+  const emit = defineEmits<{
+    (e: 'confirm'): void
+    (e: 'cancel'): void
+    (e: 'close'): void
+  }>()
+
   const { t } = useI18n()
 
   /** 对话框显示状态，双向绑定 */
@@ -33,42 +49,19 @@
     customClass?: string
   }
 
-  withDefaults(defineProps<Props>(), {
-    width: '30%',
-    clickModalClose: false,
-    center: false,
-    title: 'add',
-    confirmButtonText: 'confirm',
-    cancelButtonText: 'cancel',
-    customClass: ''
-  })
-
-  /* ---------------- emits ---------------- */
-
-  interface EmitEvents {
-    /** 点击确认按钮时触发 */
-    confirm: []
-    /** 点击取消按钮时触发 */
-    cancel: []
-    /** 对话框关闭时触发 */
-    close: []
-  }
-
-  const emit = defineEmits<EmitEvents[]>()
-
   /* ---------------- methods ---------------- */
 
   /**
    * 处理按钮点击事件
    * @param type - 事件类型：confirm 或 cancel
    */
-  const handleEvent = (type: 'confirm' | 'cancel') => {
+  function handleEvent(type: 'confirm' | 'cancel') {
     visible.value = false
     emit(type)
   }
 
   /** 关闭对话框 */
-  const close = () => {
+  function close() {
     visible.value = false
     emit('close')
   }
